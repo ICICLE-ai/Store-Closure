@@ -27,7 +27,7 @@ class erhc(GeoAgent):
     Attributes: 
         - fa (float): food availability (max fa for ERHC = 700)
         - fsa_sum (float): Sum of food availability for each foodstore visit
-        - lattitude (float): lattitude of agent
+        - latitude (float): latitude of agent
         - longitude (float): longitude of agent
     """
     def __init__(self, unique_id, model, shape,fa,fsa_sum,latitude = None, longitude=None):
@@ -124,7 +124,7 @@ class erlc(GeoAgent):
     Attributes: 
         - fa (float): food availability (max fa for ERLC = 640)
         - fsa_sum (float): Sum of food availability for each foodstore visit
-        - lattitude (float): lattitude of agent
+        - latitude (float): latitude of agent
         - longitude (float): longitude of agent
     """
     def __init__(self, unique_id, model, shape,fa,fsa_sum,latitude = None, longitude=None):
@@ -217,7 +217,7 @@ class lrhc(GeoAgent):
     Attributes: 
         - fa (float): food availability (max fa for LRHC = 600)
         - fsa_sum (float): Sum of food availability for each foodstore visit
-        - lattitude (float): lattitude of agent
+        - latitude (float): latitude of agent
         - longitude (float): longitude of agent
     """
     def __init__(self, unique_id, model, shape,fa,fsa_sum,latitude = None, longitude=None):
@@ -308,7 +308,7 @@ class lrlc(GeoAgent):
     Attributes: 
         - fa (float): food availability (max fa for LRLC = 480)
         - fsa_sum (float): Sum of food availability for each foodstore visit
-        - lattitude (float): lattitude of agent
+        - latitude (float): latitude of agent
         - longitude (float): longitude of agent
     """
     def __init__(self, unique_id, model, shape,fa,fsa_sum,latitude = None, longitude=None):
@@ -395,7 +395,7 @@ class spm(GeoAgent):
     This class represents an SPM or Supermarket
     Attributes: 
         - fa (float): food availability 
-        - lattitude (float): lattitude of agent
+        - latitude (float): latitude of agent
         - longitude (float): longitude of agent
         - FSA (int): Food Store Audit (index indicating the percentage of 87 USDA TFP items available at the store)
     """
@@ -416,7 +416,7 @@ class cspm(GeoAgent):
     This class represents a CSPM or Convenience Store & Partial Market
     Attributes: 
         - fa (float): food availability 
-        - lattitude (float): lattitude of agent
+        - latitude (float): latitude of agent
         - longitude (float): longitude of agent
         - FSA (int): Food Store Audit (index indicating the percentage of 87 USDA TFP items available at the store)
     """
