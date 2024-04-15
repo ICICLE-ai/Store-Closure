@@ -22,7 +22,16 @@ df_distance = pd.read_csv("distance_data.csv")
 
 
 class erhc(GeoAgent):
+    """
+    This class represents an ERHC agent (Households with enough resources and a private vehicle)
+    Attributes: 
+        - fa (float): food availability (max fa for ERHC = 700)
+        - fsa_sum (float): Sum of food availability for each foodstore visit
+        - lattitude (float): lattitude of agent
+        - longitude (float): longitude of agent
+    """
     def __init__(self, unique_id, model, shape,fa,fsa_sum,latitude = None, longitude=None):
+        """Initializes ERHC agent"""
         super().__init__(unique_id, model, shape)
         #self.atype = agent_type
         #self.model = model
@@ -34,6 +43,12 @@ class erhc(GeoAgent):
         step = 0
 
     def step(self):
+        """
+        Defines ERHC agent behavior at each step
+        (1) Finds a list of neighboring supermarket agents (SPM/CSPM)
+        (2) Chooses one from the list based on market distance and pre-defined agent probabilities
+        (3) Calculates food availability based on chosen market
+        """
         neighbors = self.model.grid.get_neighbors_within_distance(self,16889,center=False, relation="intersects") #neighbors within 10 miles
         list_of_spm = []
         list_of_cspm=[]
@@ -43,6 +58,7 @@ class erhc(GeoAgent):
         if step==1:
             household_data = []#contingency when we reset the model, the dataframe should be cleared
         orig = ox.distance.nearest_nodes(G, X=self.longitude, Y=self.latitude)
+        #(1) iterate over neighbors and identify distance to supermarket agents (spm/cspm)
         for neighbor in neighbors:
             if type(neighbor) is spm or type(neighbor) is cspm:
                 if ((df_distance['household']==self.unique_id) & (df_distance['market']==neighbor.unique_id)).any():
@@ -61,7 +77,7 @@ class erhc(GeoAgent):
                         list_of_spm.append([neighbor,distance])
                     else:
                         list_of_cspm.append([neighbor,distance])
-
+        #(2) choose a SPM or CSPM from the generated list
         if len(list_of_cspm) >= 1 or len(list_of_spm)>=1:
             list_of_cspm.sort(key=lambda x:x[1])
             list_of_spm.sort(key=lambda x:x[1])
@@ -77,6 +93,8 @@ class erhc(GeoAgent):
             chosen_market = chosen_market_list[0]
             dis = chosen_market_list[1]
             #df_distance.loc[len(df_distance)] = [self.unique_id,chosen_market.unique_id,dis]
+
+        #(3) calculate fa with respect to market chosen
             self.fsa_sum += chosen_market.FSA
             self.fa = (self.fsa_sum/ 700) * 100
             chosen_market.fa = round(chosen_market.fa,2)
@@ -101,7 +119,16 @@ class erhc(GeoAgent):
         df.to_csv("household_data.csv")
 
 class erlc(GeoAgent):
+    """
+    This class represents an ERLC agent (Households with enough resources and without a private vehicle)
+    Attributes: 
+        - fa (float): food availability (max fa for ERLC = 640)
+        - fsa_sum (float): Sum of food availability for each foodstore visit
+        - lattitude (float): lattitude of agent
+        - longitude (float): longitude of agent
+    """
     def __init__(self, unique_id, model, shape,fa,fsa_sum,latitude = None, longitude=None):
+        """Initializes ERLC agent"""
         super().__init__(unique_id, model, shape)
         #self.atype = agent_type
         #self.model = model
@@ -112,6 +139,12 @@ class erlc(GeoAgent):
 
 
     def step(self):
+        """
+        Defines ERLC agent behavior at each step
+        (1) Finds a list of neighboring supermarket agents (SPM/CSPM)
+        (2) Chooses one from the list based on market distance and pre-defined agent probabilities
+        (3) Calculates food availability based on chosen market
+        """
         neighbors = self.model.grid.get_neighbors_within_distance(self,6889,center=False, relation="intersects") #neighbors within 5 miles
         list_of_cspm = []
         list_of_spm=[]
@@ -119,6 +152,7 @@ class erlc(GeoAgent):
         global household_data,distance_data,df_distance,columns_for_distance
 
         orig = ox.distance.nearest_nodes(A, X=self.longitude, Y=self.latitude)
+        #(1) iterate over neighbors and identify distance to supermarket agents (spm/cspm)
         for neighbor in neighbors:
             if type(neighbor) is spm or type(neighbor) is cspm:
                 if ((df_distance['household']==self.unique_id) & (df_distance['market']==neighbor.unique_id)).any():
@@ -139,7 +173,7 @@ class erlc(GeoAgent):
                         list_of_spm.append([neighbor,distance])
                     else:
                         list_of_cspm.append([neighbor,distance])
-
+        #(2) choose a SPM or CSPM from the generated list
         if len(list_of_cspm) >= 1 or len(list_of_spm)>=1:
             list_of_cspm.sort(key=lambda x: x[1])
             list_of_spm.sort(key=lambda x: x[1])
@@ -152,6 +186,8 @@ class erlc(GeoAgent):
             chosen_market = chosen_market_list[0]
             dis = chosen_market_list[1]
             #df_distance.loc[len(df_distance)] = [self.unique_id,chosen_market.unique_id,dis]
+
+        #(3) calculate fa with respect to market chosen
             self.fsa_sum += chosen_market.FSA
             self.fa = (self.fsa_sum/ 640) * 100
             
@@ -176,7 +212,16 @@ class erlc(GeoAgent):
 
 
 class lrhc(GeoAgent):
+    """
+    This class represents a LRHC agent (Households with low resources and a private vehicle)
+    Attributes: 
+        - fa (float): food availability (max fa for LRHC = 600)
+        - fsa_sum (float): Sum of food availability for each foodstore visit
+        - lattitude (float): lattitude of agent
+        - longitude (float): longitude of agent
+    """
     def __init__(self, unique_id, model, shape,fa,fsa_sum,latitude = None, longitude=None):
+        """Initializes LRHC agent"""
         super().__init__(unique_id, model, shape)
         #self.atype = agent_type
         #self.model = model
@@ -186,12 +231,19 @@ class lrhc(GeoAgent):
         self.fsa_sum=fsa_sum
 
     def step(self):
+        """
+        Defines LRHC agent behavior at each step
+        (1) Finds a list of neighboring supermarket agents (SPM/CSPM)
+        (2) Chooses one from the list based on market distance and pre-defined agent probabilities
+        (3) Calculates food availability based on chosen market
+        """
         neighbors = self.model.grid.get_neighbors_within_distance(self,16889,center=False, relation="intersects")#neighbors within 10 miles
         list_of_cspm = []
         list_of_spm=[]
         columns_for_results = ['Type', 'id', 'fa', 'took food from(markets unique id)']
         global household_data,df_distance,columns_for_distance
         orig = ox.distance.nearest_nodes(G, X=self.longitude, Y=self.latitude)
+        #(1) iterate over neighbors and identify distance to supermarket agents (spm/cspm)
         for neighbor in neighbors:
             if type(neighbor) is spm or type(neighbor) is cspm:
                 if ((df_distance['household']==self.unique_id) & (df_distance['market']==neighbor.unique_id)).any():
@@ -211,7 +263,7 @@ class lrhc(GeoAgent):
                         list_of_spm.append([neighbor,distance])
                     else:
                         list_of_cspm.append([neighbor,distance])
-
+        #(2) choose a SPM or CSPM from the generated list
         if len(list_of_cspm) >= 1 or len(list_of_spm) >= 1:
             list_of_cspm.sort(key=lambda x: x[1])
             list_of_spm.sort(key=lambda x: x[1])
@@ -224,6 +276,8 @@ class lrhc(GeoAgent):
             chosen_market = chosen_market_list[0]
             dis = chosen_market_list[1]
             #df_distance.loc[len(df_distance)] = [self.unique_id,chosen_market.unique_id,dis]
+
+        #(3) calculate fa with respect to market chosen
             self.fsa_sum+=chosen_market.FSA
             self.fa = (self.fsa_sum/600) * 100
 
@@ -247,8 +301,18 @@ class lrhc(GeoAgent):
         df_distance.to_csv("distance_data.csv", index=False)
         df.to_csv("household_data.csv")
 
+
 class lrlc(GeoAgent):
+    """
+    This class represents a LRLC agent (Households with low resources and without a private vehicle)
+    Attributes: 
+        - fa (float): food availability (max fa for LRLC = 480)
+        - fsa_sum (float): Sum of food availability for each foodstore visit
+        - lattitude (float): lattitude of agent
+        - longitude (float): longitude of agent
+    """
     def __init__(self, unique_id, model, shape,fa,fsa_sum,latitude = None, longitude=None):
+        """Initializes LRLC agent"""
         super().__init__(unique_id, model, shape)
         #self.atype = agent_type
         #self.model = model
@@ -258,12 +322,19 @@ class lrlc(GeoAgent):
         self.fsa_sum=fsa_sum
 
     def step(self):
+        """
+        Defines LRLC agent behavior at each step
+        (1) Finds a list of neighboring supermarket agents (SPM/CSPM)
+        (2) Chooses one from the list based on market distance and pre-defined agent probabilities
+        (3) Calculates food availability based on chosen market
+        """
         neighbors = self.model.grid.get_neighbors_within_distance(self,6889,center=False, relation="intersects")#neighbors within 5 miles
         list_of_spm = []
         list_of_cspm=[]
         columns_for_results = ['Type', 'id', 'fa', 'took food from(markets unique id)']
         global household_data,df_distance,columns_for_distance
         orig = ox.distance.nearest_nodes(A, X=self.longitude, Y=self.latitude)
+        #(1) iterate over neighbors and identify distance to supermarket agents (spm/cspm)
         for neighbor in neighbors:
             if type(neighbor) is spm or type(neighbor) is cspm:
                 if ((df_distance['household']==self.unique_id) & (df_distance['market']==neighbor.unique_id)).any():
@@ -283,7 +354,7 @@ class lrlc(GeoAgent):
                     else:
                         list_of_cspm.append([neighbor,distance])
 
-
+        #(2) choose a SPM or CSPM from the generated list
         if len(list_of_cspm) >= 1 or len(list_of_spm) >= 1:
             list_of_cspm.sort(key=lambda x: x[1])
             list_of_spm.sort(key=lambda x: x[1])
@@ -296,6 +367,7 @@ class lrlc(GeoAgent):
             chosen_market = chosen_market_list[0]
             dis = chosen_market_list[1]
             #df_distance.loc[len(df_distance)] = [self.unique_id,chosen_market.unique_id,dis]
+        #(3) calculate fa with respect to market chosen
             self.fsa_sum+=chosen_market.FSA
             self.fa = (self.fsa_sum/480) * 100
             chosen_market.fa = round(chosen_market.fa, 2)
@@ -319,23 +391,43 @@ class lrlc(GeoAgent):
         df.to_csv("household_data.csv")
 
 class spm(GeoAgent):
+    """
+    This class represents an SPM or Supermarket
+    Attributes: 
+        - fa (float): food availability 
+        - lattitude (float): lattitude of agent
+        - longitude (float): longitude of agent
+        - FSA (int): Food Store Audit (index indicating the percentage of 87 USDA TFP items available at the store)
+    """
     def __init__(self, unique_id, model, shape,fa,latitude = None, longitude=None,FSA=None):
+        """Initializes SPM agent"""
         super().__init__(unique_id, model, shape)
         self.fa = fa
         self.latitude = latitude
         self.longitude = longitude
         self.FSA = FSA
     def step(self):
+        """Removes SPM when it's food availability is negative"""
         if self.fa <= 0:
             self.model.grid.remove_agent(self)
 
 class cspm(GeoAgent):
+    """
+    This class represents a CSPM or Convenience Store & Partial Market
+    Attributes: 
+        - fa (float): food availability 
+        - lattitude (float): lattitude of agent
+        - longitude (float): longitude of agent
+        - FSA (int): Food Store Audit (index indicating the percentage of 87 USDA TFP items available at the store)
+    """
     def __init__(self, unique_id, model, shape,fa,latitude = None, longitude=None,FSA=None):
+        """Initializes CSPM agent"""
         super().__init__(unique_id, model, shape)
         self.fa = fa
         self.latitude = latitude
         self.longitude = longitude
         self.FSA = FSA
     def step(self):
+        """Removes CSPM when it's food availability is negative"""
         if self.fa <= 0:
             self.model.grid.remove_agent(self)
