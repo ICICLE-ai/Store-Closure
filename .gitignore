@@ -1,0 +1,7 @@
+abm/
+__pycache__/
+__pycache__/*
+cache/
+ABM testing.ipynb
+.ipynb_checkpoints/ABM testing-checkpoint.ipynb
+data/columbus_walk.graphml

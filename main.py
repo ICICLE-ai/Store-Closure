@@ -11,8 +11,8 @@ import sys
 #import matplotlib.pyplot as plt
 import requests
 from shapely.geometry import Polygon
-from .data import erhc_values,erlc_values,lrhc_values,lrlc_values,spm_values,cspm_values,erhc_data,erlc_data,lrhc_data,lrlc_data,spm_data,cspm_data
-from .agent import erhc,erlc,lrhc,lrlc,spm,cspm
+from data import erhc_values,erlc_values,lrhc_values,lrlc_values,spm_values,cspm_values,erhc_data,erlc_data,lrhc_data,lrlc_data,spm_data,cspm_data
+from agent import erhc,erlc,lrhc,lrlc,spm,cspm
 from shapely.geometry import Polygon
 
 global h
