@@ -49,7 +49,7 @@ class BaseAgent:
         closest_cspms = sorted(closest_cspms, key=lambda x: x[1])
         return closest_spms,closest_cspms
 
-    def step(self, mfaiMax, fartherProb, closerProb, storeList, hasCar, hasResource):
+    def step(self, mfaiMax, fartherProb, closerProb, storeList):
         """
         Defines agent behavior at each step
         (1) Finds a list of neighboring supermarket agents (SPM/CSPM)
