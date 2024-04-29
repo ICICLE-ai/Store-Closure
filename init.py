@@ -1,7 +1,7 @@
+#file to define initialization of households and stores from CSVs
 import csv
 from stores import store
 from households import BaseAgent, ERHC, ERLC, LRHC, LRLC
-#from constants import * #are constants needed in this file?
 
 def initialize_stores_from_data(csv_filepath):
     """
@@ -13,9 +13,9 @@ def initialize_stores_from_data(csv_filepath):
         next(reader)  # Skip the header row if it exists
         for idx, row in enumerate(reader, start=1):
             # Extract data from the row
-            lon, lat, category, FSA =  row[:4]
+            lon, lat, category, fsa =  row[:4]
             # Create a Store object and append it to the list
-            stores.append(store(id=idx, category=category, lat=lat, lon=lon, FSA=FSA))
+            stores.append(store(id=idx, category=category, lat=lat, lon=lon, fsa=fsa))
     return stores
 
 #TODO: potential issue if houshold and store have same id?
