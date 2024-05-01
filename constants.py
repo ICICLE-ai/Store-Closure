@@ -1,5 +1,6 @@
-#Constants related to agent algorithm
-#derived from Hyder(2019) - Examining disparities in food accessibility among households in Columbus, Ohio- an agent-based model
+"""Constants related to agent algorithm."""
+#derived from Hyder(2019)
+#- Examining disparities in food accessibility among households in Columbus, Ohio- an agent-based model
 
 #Search for stores within SEARCHRADIUS
 SEARCHRADIUS = 10 #radius (miles) to search for stores
