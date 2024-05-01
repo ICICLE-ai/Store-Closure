@@ -13,7 +13,7 @@ class CensusAPI:
     census_api_key   #API key to access census data
     
     """
-    def __init__(self,census_api_key = "458cdae90eef74f926c649e866cd05e01e1548d1", state_name = "*", county_name = "*", year = 2022):
+    def __init__(self,census_api_key):
         self.census_api_key = census_api_key
     
 
