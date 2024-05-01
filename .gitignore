@@ -5,3 +5,5 @@ cache/
 ABM testing.ipynb
 .ipynb_checkpoints/ABM testing-checkpoint.ipynb
 data/columbus_walk.graphml
+api_calls.ipynb
+.ipynb_checkpoints/api_calls-checkpoint.ipynb
