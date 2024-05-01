@@ -1,11 +1,11 @@
-FROM python:3
+FROM python:3.12
 
 WORKDIR /abm-app
 
 COPY requirements.txt /abm-app/
 
 #install requirements
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 COPY . /abm-app/
 

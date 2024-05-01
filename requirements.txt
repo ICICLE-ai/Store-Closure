@@ -1,7 +1,0 @@
-math
-random
-csv
-pandas
-requests
-geopandas
-io
