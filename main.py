@@ -1,6 +1,9 @@
 """Module for main function that runs the algorithm."""
 from init import initialize_households_from_data, initialize_stores_from_data
 
+"""import api key from config.py file, please make your own config.py and use your api key"""
+from config import api_key
+
 csv_stores_file_path = "data/marketdata.csv"
 csv_households_file_path = "data/homedata.csv"
 
