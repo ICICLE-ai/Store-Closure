@@ -1,24 +1,21 @@
 # Imports
-import pandas as pd
+from pandas import DataFrame
 import requests
-import geopandas as gpd
-import io
+from geopandas import read_file
+from io import BytesIO
 
 
 class CensusAPI:
     
     """
-    
     Class Initialization Arguments:
     census_api_key   #API key to access census data
-    
     """
     def __init__(self,census_api_key):
         self.census_api_key = census_api_key
     
 
     """
-
     Get ACS (American Community Survey) data.
 
     Arguments:
@@ -28,22 +25,22 @@ class CensusAPI:
     year           #Year of data
 
     Returns Pandas Dataframe
-
     """
     def get_acs_data(self, variables, state_name, county_name, year):
-        state_code, county_code = self.get_state_and_county_code(self,state_name,county_name)
+        if (type(variables) != list):
+            raise Exception("Variables must be in a list even if you only have one. e.g [B01001_001E] or [B01001_001E,B01001_001C]")
+        state_code, county_code = self.get_state_and_county_code(state_name,county_name)
         # URL for ACS data
-        survey_url = f"https://api.census.gov/data/{year}/acs/acs5?get=NAME,{",".join(variables)}&for=county:{self.county_code}&in=state:{self.state_code}&key={self.census_api_key}"
+        survey_url = f"https://api.census.gov/data/{year}/acs/acs5?get=NAME,{",".join(variables)}&for=county:{county_code}&in=state:{state_code}&key={self.census_api_key}"
         # Request ACS data
         response = requests.request("GET", survey_url)
         if response.status_code != 200:
             raise Exception("API Call Failed")
-        acs_data = pd.DataFrame(response.json()[1:], columns=response.json()[0])
+        acs_data = DataFrame(response.json()[1:], columns=response.json()[0])
         return acs_data
 
     
     """
-
     Get Geographical data for given state.
 
     Arguments:
@@ -51,7 +48,6 @@ class CensusAPI:
     year           #Year of data
 
     Returns Geopandas DataFrame.
-
     """
     def get_geo_data(self, state_name, year):
         state_code = self.get_state_code(state_name)
@@ -61,7 +57,7 @@ class CensusAPI:
         print(response)
         data = response.content
         # Convert data to GeoDataFrame
-        geo_tract_data = gpd.read_file(io.BytesIO(data))
+        geo_tract_data = read_file(BytesIO(data))
         return geo_tract_data
 
     
@@ -74,7 +70,7 @@ class CensusAPI:
         response = requests.request("GET", states_url)
         if response.status_code != 200:
             raise Exception("API Call Failed")
-        states_data = pd.DataFrame(response.json()[1:], columns=["County, State", "Zipcode", "State Code", "County Code"])
+        states_data = DataFrame(response.json()[1:], columns=["County, State", "Zipcode", "State Code", "County Code"])
         
         #Get state code and county code
         county_code = 0
@@ -97,7 +93,7 @@ class CensusAPI:
         response = requests.request("GET", states_url)
         if response.status_code != 200:
             raise Exception("API Call Failed")
-        states_data = pd.DataFrame(response.json()[1:], columns=["County, State", "Zipcode", "State Code", "County Code"])
+        states_data = DataFrame(response.json()[1:], columns=["County, State", "Zipcode", "State Code", "County Code"])
         
         #Get state code and county code
         state_code = 0
