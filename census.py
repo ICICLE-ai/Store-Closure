@@ -20,16 +20,27 @@ class CensusAPI:
 
     Arguments:
     variables      #List of variables requested from ACS data set
-    state_name     #State name eg. "Wisconsin"
-    county_name    #County name eg. "Milwaukee County" (must include the "County")
+    state_name     #State name eg. "Wisconsin" OR "*" for all states (counties must also be "*")
+    county_name    #County name eg. "Milwaukee County" (must include the "County") OR "*" for all counties
     year           #Year of data
 
     Returns Pandas Dataframe
     """
     def get_acs_data(self, variables, state_name, county_name, year):
+        state_code = 0
+        county_code = 0
         if (type(variables) != list):
             raise Exception("Variables must be in a list even if you only have one. e.g [B01001_001E] or [B01001_001E,B01001_001C]")
-        state_code, county_code = self.get_state_and_county_code(state_name,county_name)
+        if (state_name != "*") and (county_name != "*"):
+            state_code, county_code = self.get_state_and_county_code(state_name,county_name)
+        elif (county_name == "*") and (state_name != "*"):
+            state_code = self.get_state_code(state_name)
+            county_code = "*"
+        elif (state_name == "*") and (county_name == "*"):
+          state_code = "*"
+          county_code = "*"
+        else:
+            raise Exception("Incorrect arguments for get_acs_data")
         variables = ",".join(variables)
         # URL for ACS data
         survey_url = f"https://api.census.gov/data/{year}/acs/acs5?get=NAME,{variables}&for=county:{county_code}&in=state:{state_code}&key={self.census_api_key}"
