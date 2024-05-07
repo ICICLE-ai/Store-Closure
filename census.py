@@ -66,7 +66,6 @@ class CensusAPI:
         # Load in tract data
         tract_url = f"https://www2.census.gov/geo/tiger/TIGER{year}/TRACT/tl_{year}_{state_code}_tract.zip"
         response = requests.request("GET", tract_url)
-        print(response)
         data = response.content
         # Convert data to GeoDataFrame
         geo_tract_data = read_file(BytesIO(data))
