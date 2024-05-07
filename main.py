@@ -1,7 +1,7 @@
 """Module for main function that runs the algorithm."""
 from init import initialize_households_from_data, initialize_stores_from_data
 
-"""import api key from config.py file, please make your own config.py and use your api key"""
+"""import api key from config.py file, please MAKE YOUR OWN "config.py" AND ADD YOUR API KEY"""
 from config import api_key
 
 """This calls the census api to get data (written by charlie)"""

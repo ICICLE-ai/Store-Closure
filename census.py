@@ -30,8 +30,9 @@ class CensusAPI:
         if (type(variables) != list):
             raise Exception("Variables must be in a list even if you only have one. e.g [B01001_001E] or [B01001_001E,B01001_001C]")
         state_code, county_code = self.get_state_and_county_code(state_name,county_name)
+        variables = ",".join(variables)
         # URL for ACS data
-        survey_url = f"https://api.census.gov/data/{year}/acs/acs5?get=NAME,{",".join(variables)}&for=county:{county_code}&in=state:{state_code}&key={self.census_api_key}"
+        survey_url = f"https://api.census.gov/data/{year}/acs/acs5?get=NAME,{variables}&for=county:{county_code}&in=state:{state_code}&key={self.census_api_key}"
         # Request ACS data
         response = requests.request("GET", survey_url)
         if response.status_code != 200:
