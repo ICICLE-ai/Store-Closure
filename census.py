@@ -43,7 +43,7 @@ class CensusAPI:
             raise Exception("Incorrect arguments for get_acs_data")
         variables = ",".join(variables)
         # URL for ACS data
-        survey_url = f"https://api.census.gov/data/{year}/acs/acs5?get=NAME,{variables}&for=county:{county_code}&in=state:{state_code}&key={self.census_api_key}"
+        survey_url = f"https://api.census.gov/data/{year}/acs/acs5?get=NAME,{variables}&for=tract:*&in=state:{state_code}&in=county:{county_code}&key={self.census_api_key}"
         # Request ACS data
         response = requests.request("GET", survey_url)
         if response.status_code != 200:
