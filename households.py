@@ -1,6 +1,7 @@
 """Module for agent-based model algorithm for households."""
 import math
 import random
+from mesa_geo.geo import GeoAgent
 
 from constants import (
     CLOSERPROB,
@@ -16,7 +17,7 @@ from constants import (
 )
 
 
-class BaseAgent:
+class BaseAgent(GeoAgent):
     """Base algorithm for each agents' behavior.
 
     Attributes
