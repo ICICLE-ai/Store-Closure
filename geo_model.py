@@ -1,9 +1,9 @@
-from mesa import Model
-from mesa.time import RandomActivation
-from mesa_geo import GeoSpace
+from mesa import Model #Base class for GeoModel
+from mesa.time import RandomActivation #Used to specify that agents are run randomly within each step
+from mesa_geo import GeoSpace #GeoSpace that houses agents
 import pandas as pd
-from store import Store
-from household import Household
+from store import Store # Store agent class
+from household import Household # Household agent class
 
 from constants import (
     CLOSERPROB,
@@ -16,22 +16,34 @@ from constants import (
     LRLCFARTHERPROB,
     LRLCMAX,
     SEARCHRADIUS,
-)
+) #Constant variables from the constants.py file
 
 class GeoModel(Model):
 
-    #intialize all agents
-    def __init__(self, stores: pd.DataFrame, households: pd.DataFrame):
-        super().__init__()
-        self.space = GeoSpace(warn_crs_conversion=False)
-        self.schedule = RandomActivation(self)
+    """
+    Geographical model that extends the mesa Model base class. This class initializes the store and household agents
+    and then places the agents in the mesa_geo GeoSpace, which allows the Household agents to calculate distances between
+    between themselves and Store Agents.
+    """
 
-        # Create store agents and add to model
+    def __init__(self, stores: pd.DataFrame, households: pd.DataFrame):
+        """
+        Initialize the Model, intialize all agents and, add all agents to GeoSpace and Model.
+
+        Args:
+            - stores: dataframe containing data for store agents
+            - households: dataframe containing data for household agents
+        """
+        super().__init__()
+        self.space = GeoSpace(warn_crs_conversion=False) # Create new GeoSpace to contain agents
+        self.schedule = RandomActivation(self) # Specify that agents should be activated randomly during each step
+
+        # Initialize all store agents and add them to the GeoSpace
         for index,row in stores.iterrows():
             agent = Store(index+len(households), self, row["category"],row["latitude"],row["longitude"],row["FSA"])
             self.space.add_agents(agent)
 
-        #Create household agents and add to model
+        # Initialize all household agents and add them to the scheduler and the Geospace
         for index,row in households.iterrows():
             if row["category"] == "ERHC":
                 agent = Household(index,self, "ERHC",row["latitude"],row["longitude"],0,ERHCMAX,ERHCFARTHERPROB,CLOSERPROB)
@@ -50,6 +62,9 @@ class GeoModel(Model):
                 self.schedule.add(agent)
                 self.space.add_agents(agent)
   
-    #run one step of model
-    def step(self):
-      self.schedule.step()
+    def step(self) -> None:
+
+        """
+        Step function. Runs one step of the GeoModel.
+        """
+        self.schedule.step()

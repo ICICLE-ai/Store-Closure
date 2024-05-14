@@ -5,6 +5,6 @@ from geo_model import GeoModel
 num_steps = 5
 #intialize Mesa model with stores and household data
 model = GeoModel(stores,households)
-#Run model for given number of iterations
+#Run model for given number of steps
 for i in range(num_steps):
     model.step()
