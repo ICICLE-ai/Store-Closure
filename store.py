@@ -1,5 +1,7 @@
 from mesa_geo import GeoAgent
-from shapely.geometry import Point
+from shapely.geometry import Polygon
+from shapely.ops import transform
+import pyproj
 
 
 class Store(GeoAgent):
@@ -8,7 +10,7 @@ class Store(GeoAgent):
     be a "CSPM" (convenience store) or a "SPM" (supermarket).
     """
 
-    def __init__(self: "Store",  model: "GeoModel", store_id: int, category: str, lat: float, lon: float, fsa: int) -> None:
+    def __init__(self: "Store",  model: "GeoModel", store_id: int, category: str, lat: float, lon: float, fsa: int,crs) -> None:
         """
         Initialize the Household Agent.
 
@@ -20,6 +22,14 @@ class Store(GeoAgent):
             - lon (float): longitude of agent
             - fsa (int): Food Store Audit (index indicating the percentage of 87 USDA TFP items available at the store)
         """
-        super().__init__(store_id,model,Point(lat,lon),"epsg:3857") # epsg:3857 is the mercator projection
+
+        #Transform shapely coordinates to mercator projection coords
+        polygon = Polygon(((lat+0.00015, lon),(lat-0.0002, lon-0.0002),(lat-0.0002, lon+0.0002)))
+        project = pyproj.Transformer.from_proj(
+            pyproj.Proj('epsg:4326'), # source coordinate system
+            pyproj.Proj('epsg:3857')) # destination coordinate system
+        polygon = transform(project.transform, polygon)  # apply projection
+
+        super().__init__(store_id,model,polygon,crs) # epsg:3857 is the mercator projection
         self.category = str(category)
         self.fsa = int(fsa)
