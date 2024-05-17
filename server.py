@@ -3,6 +3,7 @@ from geo_model import GeoModel
 from mesa_geo.visualization import MapModule
 from mesa.visualization import ModularServer
 from household import Household
+from store import Store
 
 model_params = {
     "stores": stores,
@@ -17,10 +18,12 @@ def agent_portrayal(agent):
         - agent: household or store to be colored red or blue.
     """
     portrayal = dict()
-    if(type(agent)==Household):
+    if isinstance(agent,Household):
+        portrayal["color"] = "Green"
+        portrayal["popup"] = "house"
+    if isinstance(agent,Store):
         portrayal["color"] = "Blue"
-    else:
-        portrayal["color"] = "Red"
+        portrayal["name"] = "store"
     return portrayal
 
 #Create Map visualization of Stores and households

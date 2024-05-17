@@ -28,7 +28,7 @@ class Household(GeoAgent):
         """
 
         #Transform shapely coordinates to mercator projection coords
-        polygon = Polygon(((lat+0.0001, lon+0.0001),(lat-0.0001, lon+0.0001),(lat-0.0001, lon-0.0001),(lat+0.0001, lon-0.0001)))
+        polygon = Polygon(((lat+0.00008, lon+0.0001),(lat-0.00008, lon+0.0001),(lat-0.00008, lon-0.0001),(lat+0.00008, lon-0.0001)))
         project = pyproj.Transformer.from_proj(
             pyproj.Proj('epsg:4326'), # source coordinate system
             pyproj.Proj('epsg:3857')) # destination coordinate system
