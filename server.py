@@ -19,7 +19,7 @@ def agent_portrayal(agent):
     """
     portrayal = dict()
     if isinstance(agent,Household):
-        portrayal["color"] = "Green"
+        portrayal["color"] = "Red"
         portrayal["popup"] = "house"
     if isinstance(agent,Store):
         portrayal["color"] = "Blue"
