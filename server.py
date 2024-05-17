@@ -1,6 +1,6 @@
 from data import stores, households #imports two pandas dataframes for household data and store data
 from geo_model import GeoModel
-from mesa_geo.visualization import MapModule
+from abm_map import MapModule
 from mesa.visualization import ModularServer
 from household import Household
 from store import Store
@@ -19,11 +19,11 @@ def agent_portrayal(agent):
     """
     portrayal = dict()
     if isinstance(agent,Household):
-        portrayal["color"] = "Red"
-        portrayal["popup"] = "house"
+        portrayal["color"] = "Green"
+        portrayal["description"] = ["house"]
     if isinstance(agent,Store):
         portrayal["color"] = "Blue"
-        portrayal["name"] = "store"
+        portrayal["description"] = [("Name","store")]
     return portrayal
 
 #Create Map visualization of Stores and households
