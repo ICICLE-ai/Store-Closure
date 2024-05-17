@@ -20,10 +20,10 @@ def agent_portrayal(agent):
     portrayal = dict()
     if isinstance(agent,Household):
         portrayal["color"] = "Green"
-        portrayal["description"] = ["house"]
+        portrayal["description"] = ["HouseHold"]
     if isinstance(agent,Store):
         portrayal["color"] = "Blue"
-        portrayal["description"] = [("Name","store")]
+        portrayal["description"] = ["Store"]
     return portrayal
 
 #Create Map visualization of Stores and households
