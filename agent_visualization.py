@@ -44,7 +44,7 @@ def number_to_color_word(value, vmin=1, vmax=100):
     Args:
         - value: the value that is to be parsed into a color word.
     """
-    if (value > vmax): return "Green"
+    if (value > vmax-5): return "Green"
     rgba = get_color(value, vmin = vmin, vmax = vmax)
     color_word = rgba_to_color_name(rgba)
     return color_word
@@ -59,7 +59,8 @@ def agent_portrayal(agent):
     portrayal = dict()
     if isinstance(agent,Household):
         portrayal["color"] = number_to_color_word(agent.mfai)
-        portrayal["description"] = ["Household"]
+
+        portrayal["description"] = ["Household","mfai score: " + str(agent.mfai)]
     if isinstance(agent,Store):
         portrayal["color"] = "Blue"
         portrayal["description"] = ["Store"]
