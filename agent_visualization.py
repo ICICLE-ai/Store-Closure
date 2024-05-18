@@ -44,7 +44,7 @@ def number_to_color_word(value, vmin=1, vmax=100):
     Args:
         - value: the value that is to be parsed into a color word.
     """
-    if (value > vmax-5): return "Green"
+    if (value >= vmax-5): return "Green"
     rgba = get_color(value, vmin = vmin, vmax = vmax)
     color_word = rgba_to_color_name(rgba)
     return color_word
