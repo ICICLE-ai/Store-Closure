@@ -37,14 +37,15 @@ def rgba_to_color_name(rgba):
     else:
         return "Yellow"  # Simplified; adjust as needed for more accuracy
 
-def number_to_color_word(value):
+def number_to_color_word(value, vmin=1, vmax=100):
     """
     Assigns a name to a value on a red-yellow-green scale.
 
     Args:
         - value: the value that is to be parsed into a color word.
     """
-    rgba = get_color(value)
+    if (value > vmax): return "Green"
+    rgba = get_color(value, vmin = vmin, vmax = vmax)
     color_word = rgba_to_color_name(rgba)
     return color_word
 

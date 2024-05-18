@@ -2,6 +2,7 @@ from mesa_geo import GeoAgent
 from shapely.geometry import Polygon
 from shapely.ops import transform
 import pyproj
+from store import Store
 from constants import (
     SEARCHRADIUS # How far the household looks for store candidates
 )
@@ -50,5 +51,50 @@ class Household(GeoAgent):
         (1) Finds a list of neighboring agents
         
         """
-        #(1) find all stores within SEARCHRADIUS
+        #(1) find all agents within SEARCHRADIUS
         closest_agents = self.model.space.get_neighbors_within_distance(self,SEARCHRADIUS)
+
+        #Find all Stores within SEARCHRADIUS, and get closest store.
+        closest_store = None
+        closest_stores = list()
+        #Get list of all closest stores
+        for agent in closest_agents:
+            if (isinstance(agent,Store)):
+                closest_stores.append([agent,self.model.space.distance(self,agent)])
+        maxi = 0
+        #Get closest store
+        for item in closest_stores:
+            if item[1] > maxi:
+                maxi = item[1]
+                closest_store = item[0]
+        
+        #calculate mfai
+        food_from_visit =  int ((closest_store.fsa / self.mfai_max)*100) #increment household's mfai by store's score
+        self.mfai += food_from_visit
+
+    """
+    ALAN's OLD STEP FUNCTION - ONLY FOR REFERENCE:
+
+    Define agent behavior at each step.
+
+        (1) Finds a list of neighboring supermarket agents (SPM/CSPM)
+        (2) Chooses one from the list based on market distance and pre-defined agent probabilities
+        (3) Calculates food availability based on chosen market.
+
+        #(2) choose one from list based on probs
+        spm_choice = nearest_spms[0]  #tuple of store and distance, closest SPM
+        cspm_choice = nearest_cspms[0]  #tuple of store and distance, closest CSPM
+        if(spm_choice[1]>cspm_choice[1]):
+            #if farther, choose SPM with fartherprob
+            chosen = random.choices([spm_choice[0],cspm_choice[0]], weights=[farther_prob,1-farther_prob])[0]
+        else:
+            #if closer, choose SPM with closerprob
+            chosen = random.choices([spm_choice[0],cspm_choice[0]], weights=[closer_prob,1-closer_prob])[0]
+        #(3) calculate mfai like self.mfai = chosenMarket.fsa / mfai_max
+        food_from_visit =  int ((chosen.fsa / mfai_max)*100) #increment household's mfai by store's score
+        self.mfai += food_from_visit
+        #TODO implement behavioral rules from slide 10 of ABM literature presentation: 0.8 for LC, 0.8 for LR, movement speeds?
+            # foodFromVisit =  chosen.fsa * hasNoCar*0.8 *hasLowResource*0.8  #increment household's mfai by store's score
+            # self.mfai += int ((foodFromVisit / mfai_max)*100)
+
+    """
