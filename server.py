@@ -4,7 +4,7 @@ from custom_map_visualization import MapModule
 from mesa.visualization import ModularServer
 from household import Household
 from store import Store
-from agent_visualization import number_to_color_word, agent_portrayal
+from agent_visualization import agent_portrayal
 
 
 model_params = {

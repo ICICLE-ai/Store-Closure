@@ -39,7 +39,7 @@ def rgba_to_color_name(rgba):
 
 def number_to_color_word(value, vmin=1, vmax=100):
     """
-    Assigns a name to a value on a red-yellow-green scale.
+    helper function for agent_portrayal. Assigns a name to a value on a red-yellow-green scale.
 
     Args:
         - value: the value that is to be parsed into a color word.
@@ -51,7 +51,7 @@ def number_to_color_word(value, vmin=1, vmax=100):
 
 def agent_portrayal(agent):
     """
-    Defines color for agent visualization. If agent is a houshold, it is colored blue, if it is a store then red.
+    Defines attributes for agent visualization. If agent is a houshold, it is colored blue, if it is a store then red.
 
     Args:
         - agent: household or store to be colored red or blue.

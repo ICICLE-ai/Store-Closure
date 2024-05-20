@@ -48,28 +48,44 @@ class Household(GeoAgent):
         Defines the behavior of a single household on each step through the model.
 
         Currently does:
-        (1) Finds a list of neighboring agents
+        (1) Finds closest SPM and Closest CSPM
+        (2) Randomly (weighted by closer_prob or farther_prob chooses either the cspm or the spm to go to.
+        (3) Calculates mfai based on chosen store's fsa score
         
         """
         #(1) find all agents within SEARCHRADIUS
         closest_agents = self.model.space.get_neighbors_within_distance(self,SEARCHRADIUS)
 
         #Find all Stores within SEARCHRADIUS, and get closest store.
-        closest_store = None
-        closest_stores = list()
-        #Get list of all closest stores
+        closest_cspm = None
+        cspm_distance = SEARCHRADIUS
+        closest_spm = None
+        spm_distance = SEARCHRADIUS
+        #Get closest cspm and closest spm
         for agent in closest_agents:
             if (isinstance(agent,Store)):
-                closest_stores.append([agent,self.model.space.distance(self,agent)])
-        maxi = 0
-        #Get closest store
-        for item in closest_stores:
-            if item[1] > maxi:
-                maxi = item[1]
-                closest_store = item[0]
+                if (agent.category == "SPM"):
+                    distance = self.model.space.distance(self,agent)
+                    if distance < spm_distance:
+                        spm_distance = distance
+                        closest_spm = agent
+                if (agent.category == "CSPM"):
+                    distance = self.model.space.distance(self,agent)
+                    if distance < cspm_distance:
+                        cspm_distance = distance
+                        closest_cspm = agent
+
+        #Randomly (with weighted by closer prob or farther prob) choose to go to cspm or spm
+        chosen_store = None
+        if(spm_distance>cspm_distance):
+            #if farther, choose SPM with fartherprob
+            chosen_store = random.choices([closest_spm,closest_cspm], weights=[farther_prob,1-farther_prob])[0]
+        else:
+            #if closer, choose SPM with closerprob
+            chosen_store = random.choices([closest_spm,closest_cspm], weights=[closer_prob,1-closer_prob])[0]
         
         #calculate mfai
-        food_from_visit =  int ((closest_store.fsa / self.mfai_max)*100) #increment household's mfai by store's score
+        food_from_visit =  int ((chosen_store.fsa / self.mfai_max)*100) #increment household's mfai by store's score
         self.mfai += food_from_visit
 
     """
