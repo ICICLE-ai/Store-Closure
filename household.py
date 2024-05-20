@@ -15,7 +15,7 @@ class Household(GeoAgent):
     defines the behavior of a single household on each step through the model.
     """
 
-    def __init__(self, house_id: int, model: "GeoModel", household_type: str, lat: float, lon: float, mfai: int, mfai_max: int, farther_prob: float, closer_prob: float,crs):
+    def __init__(self, house_id: int, model: "GeoModel", household_type: str, lat: float, lon: float, mfai: int, mfai_max: int, farther_prob: float, closer_prob: float,crs: str, trips_per_month: int):
         """
         Initialize the Household Agent.
 
@@ -42,6 +42,7 @@ class Household(GeoAgent):
         self.farther_prob = farther_prob
         self.closer_prob = closer_prob
         self.model = model
+        self.trips_per_month = trips_per_month
 
     def step(self) -> None:
         """
@@ -69,8 +70,11 @@ class Household(GeoAgent):
                 closest_store = item[0]
         
         #calculate mfai
-        food_from_visit =  int ((closest_store.fsa / self.mfai_max)*100) #increment household's mfai by store's score
-        self.mfai += food_from_visit
+        mfai_6 = self.mfai - self.mfai/self.trips_per_month
+        mfai_6 += ((closest_store.fsa) / self.mfai_max) * 100
+        self.mfai = mfai_6
+        #print(self.mfai - self.mfai/7)
+        #print(((closest_store.fsa) / self.mfai_max) * 100)
 
     """
     ALAN's OLD STEP FUNCTION - ONLY FOR REFERENCE:

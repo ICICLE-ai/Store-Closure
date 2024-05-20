@@ -46,19 +46,19 @@ class GeoModel(Model):
         # Initialize all household agents and add them to the scheduler and the Geospace
         for index,row in households.iterrows():
             if row["category"] == "ERHC":
-                agent = Household(index,self, "ERHC",row["latitude"],row["longitude"],0,ERHCMAX,ERHCFARTHERPROB,CLOSERPROB,self.space.crs)
+                agent = Household(index,self, "ERHC",row["latitude"],row["longitude"],50,ERHCMAX,ERHCFARTHERPROB,CLOSERPROB,self.space.crs,7)
                 self.schedule.add(agent)
                 self.space.add_agents(agent)
             if row["category"] == "ERLC":
-                agent = Household(index,self, "ERLC",row["latitude"],row["longitude"],0,ERLCMAX,ERLCFARTHERPROB,CLOSERPROB,self.space.crs)
+                agent = Household(index,self, "ERLC",row["latitude"],row["longitude"],50,ERLCMAX,ERLCFARTHERPROB,CLOSERPROB,self.space.crs,8)
                 self.schedule.add(agent)
                 self.space.add_agents(agent)
             if row["category"] == "LRHC":
-                agent = Household(index,self, "LRHC",row["latitude"],row["longitude"],0,LRHCMAX,LRHCFARTHERPROB,CLOSERPROB,self.space.crs)
+                agent = Household(index,self, "LRHC",row["latitude"],row["longitude"],50,LRHCMAX,LRHCFARTHERPROB,CLOSERPROB,self.space.crs,6)
                 self.schedule.add(agent)
                 self.space.add_agents(agent)
             if row["category"] == "LRLC":
-                agent = Household(index,self, "LRLC",row["latitude"],row["longitude"],0,LRLCMAX,LRLCFARTHERPROB,CLOSERPROB,self.space.crs)
+                agent = Household(index,self, "LRLC",row["latitude"],row["longitude"],50,LRLCMAX,LRLCFARTHERPROB,CLOSERPROB,self.space.crs,6)
                 self.schedule.add(agent)
                 self.space.add_agents(agent)
   
