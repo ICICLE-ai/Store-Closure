@@ -3,7 +3,7 @@
 #- Examining disparities in food accessibility among households in Columbus, Ohio- an agent-based model
 
 #Search for stores within SEARCHRADIUS
-SEARCHRADIUS = 5000 #radius (units unclear??) to search for stores
+SEARCHRADIUS = 500 #radius (units unclear??) to search for stores
 
 #Probabilities to choose SPM over CSPM
 ERHCFARTHERPROB = .74 #probability if SPM is farther than CSPM, ERHC

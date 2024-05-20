@@ -11,10 +11,15 @@ def number_to_color_word(value):
         - value: the value that is to be parsed into hex color.
     """
     # Normalize value to a range of 0 to 1
-    normalized = (value - 1) / 99
-    
+    normalized = (value - 40) / 60
+
+    # If value is too low just return red
+    if normalized < 0:
+        red = 255
+        green = 0
+        blue = 0
     # Calculate the red, green, and blue components
-    if normalized < 0.5:
+    elif normalized < 0.5:
         # Interpolate between red (255, 0, 0) and yellow (255, 255, 0)
         red = 255
         green = int(255 * (normalized * 2))

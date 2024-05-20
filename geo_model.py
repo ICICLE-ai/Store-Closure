@@ -18,7 +18,8 @@ from constants import (
     ERHCCARRYPERCENT,
     ERLCCARRYPERCENT,
     LRHCCARRYPERCENT,
-    LRLCCARRYPERCENT
+    LRLCCARRYPERCENT,
+    SEARCHRADIUS
 ) #Constant variables from the constants.py file
 
 class GeoModel(Model):
@@ -49,19 +50,19 @@ class GeoModel(Model):
         # Initialize all household agents and add them to the scheduler and the Geospace
         for index,row in households.iterrows():
             if row["category"] == "ERHC":
-                agent = Household(index,self, row["latitude"],row["longitude"],ERHCFARTHERPROB,CLOSERPROB,ERHCTRIPSPERMONTH,ERHCCARRYPERCENT,self.space.crs)
+                agent = Household(index,self, row["latitude"],row["longitude"],ERHCFARTHERPROB,CLOSERPROB,ERHCTRIPSPERMONTH,ERHCCARRYPERCENT,SEARCHRADIUS,self.space.crs)
                 self.schedule.add(agent)
                 self.space.add_agents(agent)
             if row["category"] == "ERLC":
-                agent = Household(index,self, row["latitude"],row["longitude"],ERLCFARTHERPROB,CLOSERPROB,ERLCTRIPSPERMONTH,ERLCCARRYPERCENT,self.space.crs)
+                agent = Household(index,self, row["latitude"],row["longitude"],ERLCFARTHERPROB,CLOSERPROB,ERLCTRIPSPERMONTH,ERLCCARRYPERCENT,SEARCHRADIUS,self.space.crs)
                 self.schedule.add(agent)
                 self.space.add_agents(agent)
             if row["category"] == "LRHC":
-                agent = Household(index,self, row["latitude"],row["longitude"],LRHCFARTHERPROB,CLOSERPROB,LRHCTRIPSPERMONTH,LRHCCARRYPERCENT,self.space.crs)
+                agent = Household(index,self, row["latitude"],row["longitude"],LRHCFARTHERPROB,CLOSERPROB,LRHCTRIPSPERMONTH,LRHCCARRYPERCENT,SEARCHRADIUS,self.space.crs)
                 self.schedule.add(agent)
                 self.space.add_agents(agent)
             if row["category"] == "LRLC":
-                agent = Household(index,self, row["latitude"],row["longitude"],LRLCFARTHERPROB,CLOSERPROB,LRLCTRIPSPERMONTH,LRLCCARRYPERCENT,self.space.crs)
+                agent = Household(index,self, row["latitude"],row["longitude"],LRLCFARTHERPROB,CLOSERPROB,LRLCTRIPSPERMONTH,LRLCCARRYPERCENT,SEARCHRADIUS,self.space.crs)
                 self.schedule.add(agent)
                 self.space.add_agents(agent)
   
