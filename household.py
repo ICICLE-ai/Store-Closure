@@ -51,6 +51,20 @@ class Household(GeoAgent):
         self.search_radius = search_radius
 
     def choose_store(self, search_radius):
+        """
+        Helper method for step function. This method optimizes time complexity of the step function
+        by recursively increasing search radius until it finds a spm and a cspm. Ideally this function will not
+        recurse except in edge cases. Ultimately, this method finds and chooses store to shop at.
+
+        TODO: statistical analysis should be used to find the most optimal search radius and increase to search radius
+        for each step. This function is the main bottleneck for speed in this model and should be optimized perfectly.
+
+        Args:
+            - search_radius: radius to search for stores.
+
+        returns:
+            - chosen_store: chosen store to shop at.
+        """
 
         #(1) find all agents within search radius
         closest_agents = self.model.space.get_neighbors_within_distance(self,search_radius)
