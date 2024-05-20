@@ -4,6 +4,7 @@ from shapely.ops import transform
 import pyproj
 from store import Store
 import random
+random.seed(1)
 
 
 class Household(GeoAgent):
