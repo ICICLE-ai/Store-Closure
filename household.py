@@ -3,6 +3,7 @@ from shapely.geometry import Polygon
 from shapely.ops import transform
 import pyproj
 from store import Store
+import random
 from constants import (
     SEARCHRADIUS # How far the household looks for store candidates
 )
@@ -15,17 +16,21 @@ class Household(GeoAgent):
     defines the behavior of a single household on each step through the model.
     """
 
-    def __init__(self, house_id: int, model: "GeoModel", household_type: str, lat: float, lon: float, mfai: int, mfai_max: int, farther_prob: float, closer_prob: float,crs: str, trips_per_month: int):
+    def __init__(self, house_id: int, model: "GeoModel", lat: float, lon: float, farther_prob: float, closer_prob: float, trips_per_month: int, max_carry_percent: float, crs: str):
         """
         Initialize the Household Agent.
 
         Args:
             - house_id (int): Unique id.
             - model (GeoModel): model from mesa that places Households on a GeoSpace
-            - household_type (string): ERHC, ERLC, LRHC, or LRLC.
             - lat (float): latitude of agent.
             - lon (float): longitude of agent.
-            - mfai (int): food availability.
+            - farther_prob (float): probabilty that the agent goes to the supermarket if it is farther than the convenience store
+            - closer_prob (float): proability that the agent goes to the supermarket if it is closer than the convenience store
+            - trips_per_month: Number of times the agent goes to the store every month
+            - max_carry_percent: Percent of food that an agent can bring home from the store. This percentage is lower if the
+                agent does not have a car because of the physical strain of carrying groceries. the amount of food an agent
+                can carry home per trip is calculated as: food per trip = (Stores FSA score) * (max_carry_percent)
         """
 
         #Transform shapely coordinates to mercator projection coords
@@ -36,13 +41,14 @@ class Household(GeoAgent):
         polygon = transform(project.transform, polygon)  # apply projection
 
         super().__init__(house_id,model,polygon,crs)
-        self.household_type = household_type
-        self.mfai = mfai
-        self.mfai_max = mfai_max
+        self.mfai = 100
+        self.mfai_max = 100 * trips_per_month * max_carry_percent # Maximum food that an agent could obtain per month if they went to a store with a perfect FSA score
+                # every visit. calculated as: mfai_max = (perfect FSA score of 100) * (max_carry_percent) * (trips_per_month)
         self.farther_prob = farther_prob
         self.closer_prob = closer_prob
         self.model = model
         self.trips_per_month = trips_per_month
+        self.max_carry_percent = max_carry_percent
 
     def step(self) -> None:
         """
@@ -80,17 +86,19 @@ class Household(GeoAgent):
         chosen_store = None
         if(spm_distance>cspm_distance):
             #if farther, choose SPM with fartherprob
-            chosen_store = random.choices([closest_spm,closest_cspm], weights=[farther_prob,1-farther_prob])[0]
+            chosen_store = random.choices([closest_spm,closest_cspm], weights=[self.farther_prob,1-self.farther_prob])[0]
         else:
             #if closer, choose SPM with closerprob
-            chosen_store = random.choices([closest_spm,closest_cspm], weights=[closer_prob,1-closer_prob])[0]
+            chosen_store = random.choices([closest_spm,closest_cspm], weights=[self.closer_prob,1-self.closer_prob])[0]
         
-        #calculate mfai
-        mfai_6 = self.mfai - self.mfai/self.trips_per_month
-        mfai_6 += ((closest_store.fsa) / self.mfai_max) * 100
-        self.mfai = mfai_6
-        #print(self.mfai - self.mfai/7)
-        #print(((closest_store.fsa) / self.mfai_max) * 100)
+        # calculate mfai score:
+        # code returns a moving average, however mfai per month is calculated like:
+        # FOR EACH VISIT: (number of visits per month given by trips_per_month)
+        # Sum of Food per month += ((Store's FSA score) * (Percent that the agent can carry))
+        # AT END OF MONTH
+        # mfai = ((Sum of Food per month) / (Maximum MFAI)) * 100
+        food_on_this_visit = ((chosen_store.fsa*self.max_carry_percent) / self.mfai_max) * 100
+        self.mfai = (self.mfai - self.mfai/self.trips_per_month) + food_on_this_visit
 
     """
     ALAN's OLD STEP FUNCTION - ONLY FOR REFERENCE:

@@ -3,51 +3,38 @@ import numpy as np
 from household import Household
 from store import Store
 
-def get_color(value, cmap_name='RdYlGn', vmin=1, vmax=100):
-    """
-    helper function for number_to_color_word(). Assigns a color to a value on a red-yellow-green scale.
-
-    Args:
-        - value: value that is assigned a color based on the color scale
-        - cmap_name: the color map that you want the value to be fitted to
-        - vmin: min value of "value" arg
-        - vmax: max value of "value" arg
-    """
-    norm = plt.Normalize(vmin, vmax)
-    cmap = plt.get_cmap(cmap_name)
-    rgba = cmap(norm(value))
-    return rgba
-
-def rgba_to_color_name(rgba):
-    """
-    helper function for number_to_color_word(). Assigns a name to a color on a red-yellow-green scale.
-
-    Args:
-        - rgba: the rgba value of the color that is to be parsed into a word
-    """
-    r, g, b, _ = rgba
-    if r > 0.5 and g < 0.5:
-        return "Red"
-    elif r < 0.5 and g > 0.5:
-        return "Green"
-    elif r < 0.5 and g > 0.4 and g < 0.6:
-        return "Light Green"
-    elif r < 0.5 and g > 0.6:
-        return "Yellow Green"
-    else:
-        return "Yellow"  # Simplified; adjust as needed for more accuracy
-
-def number_to_color_word(value, vmin=1, vmax=100):
+def number_to_color_word(value):
     """
     helper function for agent_portrayal. Assigns a name to a value on a red-yellow-green scale.
 
     Args:
-        - value: the value that is to be parsed into a color word.
+        - value: the value that is to be parsed into hex color.
     """
-    if (value >= vmax-5): return "Green"
-    rgba = get_color(value, vmin = vmin, vmax = vmax)
-    color_word = rgba_to_color_name(rgba)
-    return color_word
+    # Normalize value to a range of 0 to 1
+    normalized = (value - 1) / 99
+    
+    # Calculate the red, green, and blue components
+    if normalized < 0.5:
+        # Interpolate between red (255, 0, 0) and yellow (255, 255, 0)
+        red = 255
+        green = int(255 * (normalized * 2))
+        blue = 0
+    else:
+        # Interpolate between yellow (255, 255, 0) and green (0, 255, 0)
+        red = int(255 * (2 - 2 * normalized))
+        green = 255
+        blue = 0
+    
+    gray = 128
+    desaturation_factor = 0.25
+    red = int(red * (1 - desaturation_factor) + gray * desaturation_factor)
+    green = int(green * (1 - desaturation_factor) + gray * desaturation_factor)
+    blue = int(blue * (1 - desaturation_factor) + gray * desaturation_factor)
+
+    # Convert RGB to hexadecimal
+    hex_color = f"#{red:02x}{green:02x}{blue:02x}"
+    
+    return hex_color
 
 def agent_portrayal(agent):
     """

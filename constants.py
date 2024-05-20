@@ -12,12 +12,14 @@ LRHCFARTHERPROB = .64 #probability if SPM if SPM is farther than CSPM, LRHC
 LRLCFARTHERPROB = .60 #probability if SPM is farther than CSPM, LRLC
 CLOSERPROB = .80 #probability if SPM closer than CSPM, all households
 
-#Max MFAI values used to divide to get MFAI score
-ERHCMAX = 700 #max MFAI for ERHC
-ERLCMAX = 640 #max MFAI for ERLC
-LRHCMAX = 600 #max MFAI for LRHC
-LRLCMAX = 480 #max MFAI for LRLC
+#Trips to the store per month by each agent type
+ERHCTRIPSPERMONTH = 7 #trips for ERHC
+ERLCTRIPSPERMONTH = 8 #trips for ERLC
+LRHCTRIPSPERMONTH = 6 #trips for LRHC
+LRLCTRIPSPERMONTH = 6 #trips for LRLC
 
-#Store constants
-SPMRANGE = (80,95,80) #SPM FSA score range from 80 to 95 with mean of 80
-CSPMRANGE = (20,55,30) #CSPM FSA score range from 20 to 55 with mean of 30
+#Percentage that each agent type is able to carry home per trip to the store
+ERHCCARRYPERCENT = 1.0 #percent for ERHC
+ERLCCARRYPERCENT = 0.8 #percent for ERLC
+LRHCCARRYPERCENT = 1.0 #percent for LRHC
+LRLCCARRYPERCENT = 0.8 #percent for LRLC

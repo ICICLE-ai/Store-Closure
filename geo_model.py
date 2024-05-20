@@ -8,14 +8,17 @@ from household import Household # Household agent class
 from constants import (
     CLOSERPROB,
     ERHCFARTHERPROB,
-    ERHCMAX,
     ERLCFARTHERPROB,
-    ERLCMAX,
     LRHCFARTHERPROB,
-    LRHCMAX,
     LRLCFARTHERPROB,
-    LRLCMAX,
-    SEARCHRADIUS,
+    ERHCTRIPSPERMONTH,
+    ERLCTRIPSPERMONTH,
+    LRHCTRIPSPERMONTH,
+    LRLCTRIPSPERMONTH,
+    ERHCCARRYPERCENT,
+    ERLCCARRYPERCENT,
+    LRHCCARRYPERCENT,
+    LRLCCARRYPERCENT
 ) #Constant variables from the constants.py file
 
 class GeoModel(Model):
@@ -46,19 +49,19 @@ class GeoModel(Model):
         # Initialize all household agents and add them to the scheduler and the Geospace
         for index,row in households.iterrows():
             if row["category"] == "ERHC":
-                agent = Household(index,self, "ERHC",row["latitude"],row["longitude"],50,ERHCMAX,ERHCFARTHERPROB,CLOSERPROB,self.space.crs,7)
+                agent = Household(index,self, row["latitude"],row["longitude"],ERHCFARTHERPROB,CLOSERPROB,ERHCTRIPSPERMONTH,ERHCCARRYPERCENT,self.space.crs)
                 self.schedule.add(agent)
                 self.space.add_agents(agent)
             if row["category"] == "ERLC":
-                agent = Household(index,self, "ERLC",row["latitude"],row["longitude"],50,ERLCMAX,ERLCFARTHERPROB,CLOSERPROB,self.space.crs,8)
+                agent = Household(index,self, row["latitude"],row["longitude"],ERLCFARTHERPROB,CLOSERPROB,ERLCTRIPSPERMONTH,ERLCCARRYPERCENT,self.space.crs)
                 self.schedule.add(agent)
                 self.space.add_agents(agent)
             if row["category"] == "LRHC":
-                agent = Household(index,self, "LRHC",row["latitude"],row["longitude"],50,LRHCMAX,LRHCFARTHERPROB,CLOSERPROB,self.space.crs,6)
+                agent = Household(index,self, row["latitude"],row["longitude"],LRHCFARTHERPROB,CLOSERPROB,LRHCTRIPSPERMONTH,LRHCCARRYPERCENT,self.space.crs)
                 self.schedule.add(agent)
                 self.space.add_agents(agent)
             if row["category"] == "LRLC":
-                agent = Household(index,self, "LRLC",row["latitude"],row["longitude"],50,LRLCMAX,LRLCFARTHERPROB,CLOSERPROB,self.space.crs,6)
+                agent = Household(index,self, row["latitude"],row["longitude"],LRLCFARTHERPROB,CLOSERPROB,LRLCTRIPSPERMONTH,LRLCCARRYPERCENT,self.space.crs)
                 self.schedule.add(agent)
                 self.space.add_agents(agent)
   
