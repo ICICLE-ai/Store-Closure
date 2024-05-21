@@ -10,4 +10,6 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 
 COPY . /abm-app/
 
+EXPOSE 8080
+
 CMD ["python3", "server.py"]
