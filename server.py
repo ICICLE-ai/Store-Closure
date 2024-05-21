@@ -2,8 +2,6 @@ from data import stores, households #imports two pandas dataframes for household
 from geo_model import GeoModel
 from custom_map_visualization import MapModule
 from mesa.visualization import ModularServer
-from household import Household
-from store import Store
 from agent_visualization import agent_portrayal
 
 

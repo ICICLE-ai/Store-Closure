@@ -1,5 +1,3 @@
-import matplotlib.pyplot as plt
-import numpy as np
 from household import Household
 from store import Store
 
