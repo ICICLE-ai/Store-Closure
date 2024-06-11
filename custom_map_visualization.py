@@ -1,3 +1,10 @@
+"""
+THIS FILE IS WRITTEN BY THE DEVS FROM MESA_GEO
+
+This file adds a few asthetic tweaks to the mesa-geo MapModule class.
+This python file is the server-side counterpart of client-side file map.js, which is located in the templates folder.
+"""
+
 from __future__ import annotations
 
 import dataclasses

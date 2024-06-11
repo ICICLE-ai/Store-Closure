@@ -1,26 +1,9 @@
-from mesa import Model #Base class for GeoModel
+from mesa import Model, DataCollector #Base class for GeoModel
 from mesa.time import RandomActivation #Used to specify that agents are run randomly within each step
 from mesa_geo import GeoSpace #GeoSpace that houses agents
 import pandas as pd
 from store import Store # Store agent class
 from household import Household # Household agent class
-
-from constants import (
-    CLOSERPROB,
-    ERHCFARTHERPROB,
-    ERLCFARTHERPROB,
-    LRHCFARTHERPROB,
-    LRLCFARTHERPROB,
-    ERHCTRIPSPERMONTH,
-    ERLCTRIPSPERMONTH,
-    LRHCTRIPSPERMONTH,
-    LRLCTRIPSPERMONTH,
-    ERHCCARRYPERCENT,
-    ERLCCARRYPERCENT,
-    LRHCCARRYPERCENT,
-    LRLCCARRYPERCENT,
-    SEARCHRADIUS
-) #Constant variables from the constants.py file
 
 class GeoModel(Model):
 
@@ -30,7 +13,21 @@ class GeoModel(Model):
     between themselves and Store Agents.
     """
 
-    def __init__(self, stores: pd.DataFrame, households: pd.DataFrame):
+    def __init__(self, stores: pd.DataFrame, households: pd.DataFrame, 
+                  CLOSERPROB,
+                  ERHCFARTHERPROB,
+                  ERLCFARTHERPROB,
+                  LRHCFARTHERPROB,
+                  LRLCFARTHERPROB,
+                  ERHCTRIPSPERMONTH,
+                  ERLCTRIPSPERMONTH,
+                  LRHCTRIPSPERMONTH,
+                  LRLCTRIPSPERMONTH,
+                  ERHCCARRYPERCENT,
+                  ERLCCARRYPERCENT,
+                  LRHCCARRYPERCENT,
+                  LRLCCARRYPERCENT,
+                  SEARCHRADIUS):
         """
         Initialize the Model, intialize all agents and, add all agents to GeoSpace and Model.
 
@@ -41,6 +38,7 @@ class GeoModel(Model):
         super().__init__()
         self.space = GeoSpace(warn_crs_conversion=False) # Create new GeoSpace to contain agents
         self.schedule = RandomActivation(self) # Specify that agents should be activated randomly during each step
+        
 
         # Initialize all store agents and add them to the GeoSpace
         for index,row in stores.iterrows():
@@ -65,10 +63,31 @@ class GeoModel(Model):
                 agent = Household(index,self, row["latitude"],row["longitude"],LRLCFARTHERPROB,CLOSERPROB,LRLCTRIPSPERMONTH,LRLCCARRYPERCENT,SEARCHRADIUS,self.space.crs)
                 self.schedule.add(agent)
                 self.space.add_agents(agent)
-  
+
+        self.datacollector = DataCollector(
+          model_reporters={"Average mfai": "avg_mfai"}#,
+          #agent_reporters={"Mfai": "mfai"}
+        )
+        self.datacollector.collect(self)
+        
+    @property
+    def avg_mfai(self):
+        """
+        Function that returns avg mfai scores of all agents, used in self.datacollector to display a chart.
+        """
+        total = 0
+        count = 0
+        for agent in self.schedule.agents:
+            total += agent.mfai
+            count += 1
+        print(total/count)
+        return int(total/count)
+    
     def step(self) -> None:
 
         """
         Step function. Runs one step of the GeoModel.
         """
         self.schedule.step()
+        self.datacollector.collect(self)
+        
