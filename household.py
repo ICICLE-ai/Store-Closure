@@ -14,7 +14,7 @@ class Household(GeoAgent):
     defines the behavior of a single household on each step through the model.
     """
 
-    def __init__(self, house_id: int, model: "GeoModel", lat: float, lon: float, farther_prob: float, closer_prob: float, trips_per_month: int, max_carry_percent: float, search_radius: int, crs: str):
+    def __init__(self, house_id: int, model, lat: float, lon: float, farther_prob: float, closer_prob: float, trips_per_month: int, max_carry_percent: float, search_radius: int, crs: str):
         """
         Initialize the Household Agent.
 
