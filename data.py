@@ -1,4 +1,5 @@
 import pandas as pd
+import geopandas
 import random
 random.seed(1)
 
@@ -46,8 +47,14 @@ households_variables_list = (
     "B19001_017E",
 )
 
+ohio_geodata = geopandas.read_file("data/tl_2022_39_tract.zip")
+franklin_geodata = ohio_geodata[ohio_geodata['COUNTYFP'] == "039"]
+franklin_geodata.to_crs(epsg=3857)
+franklin_geodata = franklin_geodata.rename(columns={"TRACTCE":"tract"})
+tract_data = pd.merge(franklin_geodata, TRACT DATAFRAME NAME HERE, on = "tract", how="inner")
+
 #Stores data in variables. This data is imported by run.py
 #and used to intialize the GeoModel
-households_data = pd.read_csv(households_file_path)
-stores_data = pd.read_csv(stores_file_path)
+households = pd.read_csv(households_file_path)
+stores = pd.read_csv(stores_file_path)
 
