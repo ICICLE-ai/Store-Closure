@@ -3,9 +3,8 @@ import geopandas
 import random
 random.seed(1)
 
-#Loads household and store data from csv files
-stores_file_path = "data/marketdata.csv"
-households_file_path = "data/homedata.csv"
+county_data_filepath = "franklin_data.csv"
+geodata_filepath = "data/tl_2022_39_tract.zip"
 
 #Dictionary to describe homedata Variables
 households_variables_dict = {
@@ -47,14 +46,20 @@ households_variables_list = (
     "B19001_017E",
 )
 
-ohio_geodata = geopandas.read_file("data/tl_2022_39_tract.zip")
-franklin_geodata = ohio_geodata[ohio_geodata['COUNTYFP'] == "039"]
-franklin_geodata.to_crs(epsg=3857)
-franklin_geodata = franklin_geodata.rename(columns={"TRACTCE":"tract"})
-tract_data = pd.merge(franklin_geodata, TRACT DATAFRAME NAME HERE, on = "tract", how="inner")
+county_data = pd.read_csv(county_data_filepath)
+geodata = geopandas.read_file(geodata_filepath)
+county_geodata = geodata[geodata['COUNTYFP'] == "039"]
+county_geodata.to_crs(epsg=3857)
+county_geodata = county_geodata.rename(columns={"TRACTCE":"tract"})
+data = pd.merge(county_geodata, county_data, on = "tract", how="inner")
+fake_households = pd.DataFrame()
+for row in data.iterrows():
+  for i in range(row["B19001_001E"]):
+    
+
 
 #Stores data in variables. This data is imported by run.py
 #and used to intialize the GeoModel
-households = pd.read_csv(households_file_path)
-stores = pd.read_csv(stores_file_path)
+households = 
+stores = pd.read_csv("marketdata.csv")
 
