@@ -51,9 +51,9 @@ def agent_portrayal(agent):
     """
     portrayal = dict()
     if isinstance(agent,Household):
-        portrayal["color"] = number_to_color_word(agent.mfai)
+        portrayal["color"] = number_to_color_word(agent.income)
 
-        portrayal["description"] = ["Household","mfai score: " + str(agent.mfai)]
+        portrayal["description"] = ["Household","income: " + str(agent.income)]
     if isinstance(agent,Store):
         portrayal["color"] = "Blue"
         portrayal["description"] = ["Category: " + str(agent.category),"FSA Score: " + str(agent.fsa)]

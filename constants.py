@@ -1,4 +1,13 @@
-"""Constants related to agent algorithm."""
+#Radius that households look for stores on first search iteration. Units unclear ^^
+SEARCHRADIUS = 500
 
-#Search for stores within SEARCHRADIUS
-SEARCHRADIUS = 500 #radius (units unclear??) to search for stores
+#crs geometry for map (this is web mercator)
+CRS = "3857"
+
+#Census codes
+COUNTYCODE = "049" #code for franklin county
+STATECODE = "039" #code for Ohio
+
+#File paths
+HOUSEHOLDSFILEPATH = "data/households.csv"
+STORESFILEPATH = "data/marketdata.csv"

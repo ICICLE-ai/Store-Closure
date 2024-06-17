@@ -5,6 +5,11 @@ import pandas as pd
 from store import Store # Store agent class
 from household import Household # Household agent class
 
+from constants import(
+    SEARCHRADIUS,
+    CRS
+)
+
 class GeoModel(Model):
 
     """
@@ -13,21 +18,7 @@ class GeoModel(Model):
     between themselves and Store Agents.
     """
 
-    def __init__(self, stores: pd.DataFrame, households: pd.DataFrame, 
-                  CLOSERPROB,
-                  ERHCFARTHERPROB,
-                  ERLCFARTHERPROB,
-                  LRHCFARTHERPROB,
-                  LRLCFARTHERPROB,
-                  ERHCTRIPSPERMONTH,
-                  ERLCTRIPSPERMONTH,
-                  LRHCTRIPSPERMONTH,
-                  LRLCTRIPSPERMONTH,
-                  ERHCCARRYPERCENT,
-                  ERLCCARRYPERCENT,
-                  LRHCCARRYPERCENT,
-                  LRLCCARRYPERCENT,
-                  SEARCHRADIUS):
+    def __init__(self, stores: pd.DataFrame, households: pd.DataFrame):
         """
         Initialize the Model, intialize all agents and, add all agents to GeoSpace and Model.
 
@@ -47,34 +38,22 @@ class GeoModel(Model):
 
         # Initialize all household agents and add them to the scheduler and the Geospace
         for index,row in households.iterrows():
-            if row["category"] == "ERHC":
-                agent = Household(index,self, row["latitude"],row["longitude"],ERHCFARTHERPROB,CLOSERPROB,ERHCTRIPSPERMONTH,ERHCCARRYPERCENT,SEARCHRADIUS,self.space.crs)
-                self.schedule.add(agent)
-                self.space.add_agents(agent)
-            if row["category"] == "ERLC":
-                agent = Household(index,self, row["latitude"],row["longitude"],ERLCFARTHERPROB,CLOSERPROB,ERLCTRIPSPERMONTH,ERLCCARRYPERCENT,SEARCHRADIUS,self.space.crs)
-                self.schedule.add(agent)
-                self.space.add_agents(agent)
-            if row["category"] == "LRHC":
-                agent = Household(index,self, row["latitude"],row["longitude"],LRHCFARTHERPROB,CLOSERPROB,LRHCTRIPSPERMONTH,LRHCCARRYPERCENT,SEARCHRADIUS,self.space.crs)
-                self.schedule.add(agent)
-                self.space.add_agents(agent)
-            if row["category"] == "LRLC":
-                agent = Household(index,self, row["latitude"],row["longitude"],LRLCFARTHERPROB,CLOSERPROB,LRLCTRIPSPERMONTH,LRLCCARRYPERCENT,SEARCHRADIUS,self.space.crs)
-                self.schedule.add(agent)
-                self.space.add_agents(agent)
+            agent = Household(self, row["id"], row["latitude"], row["longitude"], row["income"],SEARCHRADIUS,CRS)
+            self.schedule.add(agent)
+            self.space.add_agents(agent)
 
-        self.datacollector = DataCollector(
-          model_reporters={"Average mfai": "avg_mfai"}#,
-          #agent_reporters={"Mfai": "mfai"}
-        )
-        self.datacollector.collect(self)
+        #self.datacollector = DataCollector(
+        #    model_reporters={"Average mfai": "avg_mfai"}#,
+        #    #agent_reporters={"Mfai": "mfai"}
+        #)
+        #self.datacollector.collect(self)
         
+    """
     @property
     def avg_mfai(self):
-        """
+        """"""
         Function that returns avg mfai scores of all agents, used in self.datacollector to display a chart.
-        """
+        """"""
         total = 0
         count = 0
         for agent in self.schedule.agents:
@@ -82,12 +61,13 @@ class GeoModel(Model):
             count += 1
         print(total/count)
         return int(total/count)
-    
+    """
+
     def step(self) -> None:
 
         """
         Step function. Runs one step of the GeoModel.
         """
         self.schedule.step()
-        self.datacollector.collect(self)
+        #self.datacollector.collect(self)
         

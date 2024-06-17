@@ -1,5 +1,5 @@
 from mesa_geo import GeoAgent
-from shapely.geometry import Polygon
+from shapely.geometry import Polygon,Point
 from shapely.ops import transform
 import pyproj
 from store import Store
@@ -14,41 +14,27 @@ class Household(GeoAgent):
     defines the behavior of a single household on each step through the model.
     """
 
-    def __init__(self, house_id: int, model, lat: float, lon: float, farther_prob: float, closer_prob: float, trips_per_month: int, max_carry_percent: float, search_radius: int, crs: str):
+    def __init__(self, model, id: int, latitude, longitude, income, search_radius: int, crs: str):
         """
         Initialize the Household Agent.
 
         Args:
-            - house_id (int): Unique id.
             - model (GeoModel): model from mesa that places Households on a GeoSpace
-            - lat (float): latitude of agent.
-            - lon (float): longitude of agent.
-            - farther_prob (float): probabilty that the agent goes to the supermarket if it is farther than the convenience store
-            - closer_prob (float): proability that the agent goes to the supermarket if it is closer than the convenience store
-            - trips_per_month: Number of times the agent goes to the store every month
-            - max_carry_percent: Percent of food that an agent can bring home from the store. This percentage is lower if the
-                agent does not have a car because of the physical strain of carrying groceries. the amount of food an agent
-                can carry home per trip is calculated as: food per trip = (Stores FSA score) * (max_carry_percent)
+            - id: id number of agent
+            - location: shapely Point object that contains latitude and longitude
             - search_radius: how far to search for stores (units unclear??)
             - crs: geometry
         """
 
         #Transform shapely coordinates to mercator projection coords
-        polygon = Polygon(((lat+0.00008, lon+0.0001),(lat-0.00008, lon+0.0001),(lat-0.00008, lon-0.0001),(lat+0.00008, lon-0.0001)))
-        project = pyproj.Transformer.from_proj(
-            pyproj.Proj('epsg:4326'), # source coordinate system
-            pyproj.Proj('epsg:3857')) # destination coordinate system
-        polygon = transform(project.transform, polygon)  # apply projection
+        polygon = Polygon(((latitude+0.00008, longitude+0.0001),(latitude-0.00008, longitude+0.0001),(latitude-0.00008, longitude-0.0001),(latitude+0.00008, longitude-0.0001)))
+        #project = pyproj.Transformer.from_proj(
+        #    pyproj.Proj('epsg:4326'), # source coordinate system
+        #    pyproj.Proj('epsg:3857')) # destination coordinate system
+        #polygon = transform(project.transform, polygon)  # apply projection
 
-        super().__init__(house_id,model,polygon,crs)
-        self.mfai = 100
-        self.mfai_max = 100 * trips_per_month * max_carry_percent # Maximum food that an agent could obtain per month if they went to a store with a perfect FSA score
-                # every visit. calculated as: mfai_max = (perfect FSA score of 100) * (max_carry_percent) * (trips_per_month)
-        self.farther_prob = farther_prob
-        self.closer_prob = closer_prob
-        self.model = model
-        self.trips_per_month = trips_per_month
-        self.max_carry_percent = max_carry_percent
+        super().__init__(id,model,polygon,crs)
+        self.income = income
         self.search_radius = search_radius
 
     def choose_store(self, search_radius):
