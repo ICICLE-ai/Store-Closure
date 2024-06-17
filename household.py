@@ -27,11 +27,13 @@ class Household(GeoAgent):
         """
 
         #Transform shapely coordinates to mercator projection coords
+        
         polygon = Polygon(((latitude+0.00008, longitude+0.0001),(latitude-0.00008, longitude+0.0001),(latitude-0.00008, longitude-0.0001),(latitude+0.00008, longitude-0.0001)))
-        #project = pyproj.Transformer.from_proj(
-        #    pyproj.Proj('epsg:4326'), # source coordinate system
-        #    pyproj.Proj('epsg:3857')) # destination coordinate system
-        #polygon = transform(project.transform, polygon)  # apply projection
+        project = pyproj.Transformer.from_proj(
+            pyproj.Proj('epsg:4326'), # source coordinate system
+            pyproj.Proj('epsg:3857')) # destination coordinate system
+        polygon = transform(project.transform, polygon)  # apply projection
+        
 
         super().__init__(id,model,polygon,crs)
         self.income = income

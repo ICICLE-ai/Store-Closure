@@ -2,6 +2,7 @@ from household import Household
 from store import Store
 
 def number_to_color_word(value):
+    return f"#{200:02x}{0:02x}{0:02x}"
     """
     helper function for agent_portrayal. Assigns a name to a value on a red-yellow-green scale.
 
@@ -51,7 +52,7 @@ def agent_portrayal(agent):
     """
     portrayal = dict()
     if isinstance(agent,Household):
-        portrayal["color"] = number_to_color_word(agent.income)
+        portrayal["color"] = "Red" #number_to_color_word(agent.income)
 
         portrayal["description"] = ["Household","income: " + str(agent.income)]
     if isinstance(agent,Store):
