@@ -11,3 +11,5 @@ STATECODE = "039" #code for Ohio
 #File paths
 HOUSEHOLDSFILEPATH = "data/households.csv"
 STORESFILEPATH = "data/marketdata.csv"
+COUNTYDATAFILEPATH = "data/franklin_data.csv"
+GEODATAFILEPATH = "data/tl_2022_39_tract.zip"
