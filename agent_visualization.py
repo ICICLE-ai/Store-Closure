@@ -57,5 +57,5 @@ def agent_portrayal(agent):
         portrayal["description"] = ["Household","income: " + str(agent.income)]
     if isinstance(agent,Store):
         portrayal["color"] = "Blue"
-        portrayal["description"] = ["Category: " + str(agent.category),"FSA Score: " + str(agent.fsa)]
+        portrayal["description"] = ["Category: " + str(agent.type),"Name: " + str(agent.name)]
     return portrayal

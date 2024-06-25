@@ -104,7 +104,7 @@ class Household(GeoAgent):
         (2) Calculates mfai based on chosen store's fsa score
         
         """
-        chosen_store = self.choose_store(self.search_radius)
+        #chosen_store = self.choose_store(self.search_radius)
 
         # calculate mfai score:
         # code returns a moving average, however mfai per month is calculated like:
@@ -112,5 +112,5 @@ class Household(GeoAgent):
         # Sum of Food per month += ((Store's FSA score) * (Percent that the agent can carry))
         # AT END OF MONTH
         # mfai = ((Sum of Food per month) / (Maximum MFAI)) * 100
-        food_on_this_visit = ((chosen_store.fsa*self.max_carry_percent) / self.mfai_max) * 100
-        self.mfai = (self.mfai - self.mfai/self.trips_per_month) + food_on_this_visit
+        #food_on_this_visit = ((chosen_store.fsa*self.max_carry_percent) / self.mfai_max) * 100
+        #self.mfai = (self.mfai - self.mfai/self.trips_per_month) + food_on_this_visit
