@@ -33,7 +33,7 @@ class GeoModel(Model):
 
         # Initialize all store agents and add them to the GeoSpace
         for index,row in stores.iterrows():
-            agent = Store(index+len(households), self, row["category"],row["latitude"],row["longitude"],row["FSA"],self.space.crs)
+            agent = Store(self, index+len(households), row["name"],row["type"], row["latitude"],row["longitude"],CRS)
             self.space.add_agents(agent)
 
         # Initialize all household agents and add them to the scheduler and the Geospace

@@ -10,7 +10,7 @@ class Store(GeoAgent):
     be a "CSPM" (convenience store) or a "SPM" (supermarket).
     """
 
-    def __init__(self: "Store",  model: "GeoModel", store_id: int, category: str, lat: float, lon: float, fsa: int,crs) -> None:
+    def __init__(self,  model, id: int, name, type, lat: float, lon: float, crs) -> None:
         """
         Initialize the Household Agent.
 
@@ -30,6 +30,6 @@ class Store(GeoAgent):
             pyproj.Proj('epsg:3857')) # destination coordinate system
         polygon = transform(project.transform, polygon)  # apply projection
 
-        super().__init__(store_id,model,polygon,crs) # epsg:3857 is the mercator projection
-        self.category = str(category)
-        self.fsa = int(fsa)
+        super().__init__(id,model,polygon,crs) # epsg:3857 is the mercator projection
+        self.type = type
+        self.name = name

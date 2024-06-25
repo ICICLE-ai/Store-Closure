@@ -4,7 +4,7 @@ from mesa.visualization import ModularServer, Slider, ChartModule
 from agent_visualization import agent_portrayal
 import pandas as pd
 
-stores = pd.read_csv("data/marketdata.csv")
+stores = pd.read_csv("data/stores.csv")
 households = pd.read_csv("data/households.csv")
 
 model_params = {
