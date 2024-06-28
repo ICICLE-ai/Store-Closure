@@ -24,7 +24,7 @@ class Store(GeoAgent):
         """
 
         #Transform shapely coordinates to mercator projection coords
-        polygon = Polygon(((lat+0.00008, lon),(lat-0.00016, lon-0.00016),(lat-0.00016, lon+0.00016)))
+        polygon = Polygon(((lat+0.00016, lon),(lat-0.00032, lon-0.00032),(lat-0.00032, lon+0.00032)))
         project = pyproj.Transformer.from_proj(
             pyproj.Proj('epsg:4326'), # source coordinate system
             pyproj.Proj('epsg:3857')) # destination coordinate system
