@@ -5,11 +5,12 @@ SEARCHRADIUS = 500
 CRS = "3857"
 
 #Census codes
+FIPSCODE = "39049" #fips code for franklin county ohio - use this to fill in state code and county code below
 COUNTYCODE = "049" #code for franklin county
-STATECODE = "039" #code for Ohio
+STATECODE = "39" #code for Ohio
 
 #File paths
 HOUSEHOLDSFILEPATH = "data/households.csv"
-STORESFILEPATH = "data/marketdata.csv"
-COUNTYDATAFILEPATH = "data/franklin_data.csv"
-GEODATAFILEPATH = "data/tl_2022_39_tract.zip"
+STORESFILEPATH = "data/stores.csv"
+COUNTYDATAFILEPATH = "data/county_data.csv"
+GEODATAFILEPATH = "data/tract_boundaries.zip"
