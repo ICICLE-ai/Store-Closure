@@ -38,7 +38,7 @@ class GeoModel(Model):
 
         # Initialize all household agents and add them to the scheduler and the Geospace
         for index,row in households.iterrows():
-            agent = Household(self, row["id"], float(row["latitude"]), float(row["longitude"]), row["income"],SEARCHRADIUS,CRS)
+            agent = Household(self, row["id"], float(row["latitude"]), float(row["longitude"]), row["polygon"], row["income"],SEARCHRADIUS,CRS)
             self.schedule.add(agent)
             self.space.add_agents(agent)
 

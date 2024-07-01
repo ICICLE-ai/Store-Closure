@@ -1,6 +1,7 @@
 from mesa_geo import GeoAgent
 from shapely.geometry import Polygon,Point
 from shapely.ops import transform
+from shapely.wkt import loads
 import pyproj
 from store import Store
 import random
@@ -14,7 +15,7 @@ class Household(GeoAgent):
     defines the behavior of a single household on each step through the model.
     """
 
-    def __init__(self, model, id: int, latitude, longitude, income, search_radius: int, crs: str):
+    def __init__(self, model, id: int, latitude, longitude, polygon, income, search_radius: int, crs: str):
         """
         Initialize the Household Agent.
 
@@ -27,12 +28,7 @@ class Household(GeoAgent):
         """
 
         #Transform shapely coordinates to mercator projection coords
-        
-        polygon = Polygon(((latitude+0.00008, longitude+0.0001),(latitude-0.00008, longitude+0.0001),(latitude-0.00008, longitude-0.0001),(latitude+0.00008, longitude-0.0001)))
-        project = pyproj.Transformer.from_proj(
-            pyproj.Proj('epsg:4326'), # source coordinate system
-            pyproj.Proj('epsg:3857')) # destination coordinate system
-        polygon = transform(project.transform, polygon)  # apply projection
+        polygon = loads(polygon)
         
 
         super().__init__(id,model,polygon,crs)
