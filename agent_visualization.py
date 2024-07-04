@@ -2,7 +2,6 @@ from household import Household
 from store import Store
 
 def number_to_color_word(value):
-    return f"#{200:02x}{0:02x}{0:02x}"
     """
     helper function for agent_portrayal. Assigns a name to a value on a red-yellow-green scale.
 
@@ -10,10 +9,10 @@ def number_to_color_word(value):
         - value: the value that is to be parsed into hex color.
     """
     #used to change how dark the color is
-    top_range = 175
+    top_range = 255
 
     # Normalize value to a range of 0 to 1
-    normalized = (value - 50) / 50
+    normalized = (value) / 200000
 
     # If value is too low just return red
     if normalized < 0:
@@ -32,11 +31,11 @@ def number_to_color_word(value):
         green = top_range
         blue = 0
     
-    #gray = 128
-    #desaturation_factor = 0.25
-    #red = int(red * (1 - desaturation_factor) + gray * desaturation_factor)
-    #green = int(green * (1 - desaturation_factor) + gray * desaturation_factor)
-    #blue = int(blue * (1 - desaturation_factor) + gray * desaturation_factor)
+    gray = 128
+    desaturation_factor = .25
+    red = int(red * (1 - desaturation_factor) + gray * desaturation_factor)
+    green = int(green * (1 - desaturation_factor) + gray * desaturation_factor)
+    blue = int(blue * (1 - desaturation_factor) + gray * desaturation_factor)
 
     # Convert RGB to hexadecimal
     hex_color = f"#{red:02x}{green:02x}{blue:02x}"
@@ -52,9 +51,9 @@ def agent_portrayal(agent):
     """
     portrayal = dict()
     if isinstance(agent,Household):
-        portrayal["color"] = "Red" #number_to_color_word(agent.income)
+        portrayal["color"] = number_to_color_word(agent.income)
 
-        portrayal["description"] = ["Household","income: " + str(agent.income)]
+        portrayal["description"] = ["Household","income: " + "{:,}".format(agent.income) , "household size: " + str(agent.household_size) , "vehicles: " + str(agent.vehicles) , "number of workers: " + str(agent.number_of_workers)]
     if isinstance(agent,Store):
         portrayal["color"] = "Blue"
         portrayal["description"] = ["Category: " + str(agent.type),"Name: " + str(agent.name)]

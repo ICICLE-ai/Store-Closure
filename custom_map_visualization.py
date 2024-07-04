@@ -14,6 +14,7 @@ from pathlib import Path
 import geopandas as gpd
 import xyzservices
 import xyzservices.providers as xyz
+import contextily as ctx
 from folium.utilities import image_to_url
 from mesa.visualization.ModularVisualization import VisualizationElement
 from shapely.geometry import Point, mapping
@@ -60,7 +61,7 @@ class MapModule(VisualizationElement):
         zoom=None,
         map_width=500,
         map_height=500,
-        tiles=xyz.OpenStreetMap.Mapnik,
+        tiles=ctx.providers.CartoDB.Voyager,
         scale_options=None,
     ):
         """

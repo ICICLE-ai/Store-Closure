@@ -27,7 +27,7 @@ chart = ChartModule(
 server = ModularServer(
     GeoModel,
     [map_vis],
-    "Store Closure Agent-Based Model",
+    "Food Access Strategy Simulation",
     model_params,
 )
 print("running")

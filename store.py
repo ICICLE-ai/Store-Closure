@@ -1,6 +1,6 @@
 from mesa_geo import GeoAgent
-from shapely.geometry import Polygon
-from shapely.ops import transform
+from shapely.geometry import Polygon, Point
+from shapely.ops import transform, unary_union
 import pyproj
 
 
@@ -24,12 +24,12 @@ class Store(GeoAgent):
         """
 
         #Transform shapely coordinates to mercator projection coords
-        polygon = Polygon(((lat+0.00016, lon),(lat-0.00032, lon-0.00032),(lat-0.00032, lon+0.00032)))
+        point = Point(lat,lon)
         project = pyproj.Transformer.from_proj(
             pyproj.Proj('epsg:4326'), # source coordinate system
             pyproj.Proj('epsg:3857')) # destination coordinate system
-        polygon = transform(project.transform, polygon)  # apply projection
-
+        point = transform(project.transform, point)  # apply projection
+        polygon = Polygon(((point.x, point.y+50),(point.x+50, point.y-50),(point.x-50, point.y-50)))
         super().__init__(id,model,polygon,crs) # epsg:3857 is the mercator projection
         self.type = type
         self.name = name

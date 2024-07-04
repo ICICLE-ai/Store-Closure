@@ -34,7 +34,7 @@ def get_random_point(tract_polygon,polygons):
             count += 1
             if count == 1000:
                 raise Exception()
-            polygon = Polygon(((location.x+10, location.y+10),(location.x-10, location.y+10),(location.x-10, location.y-10),(location.x+10, location.y-10)))
+            polygon =Polygon(((location.x+20, location.y+20),(location.x-20, location.y+20),(location.x-20, location.y-20),(location.x+20, location.y-20)))
             not_touching = True
             for polygon_2 in polygons:
                 touches = polygon.intersects(polygon_2)
@@ -324,6 +324,24 @@ household_values_list = list = [
     "Median Income for 7+ Person(s)"
 ]
 
+income_ranges = [
+    [0, 10000],
+    [10000, 15000],
+    [15000, 20000],
+    [20000, 25000],
+    [25000, 30000],
+    [30000, 35000],
+    [35000, 40000],
+    [40000, 45000],
+    [45000, 50000],
+    [50000, 60000],
+    [60000, 75000],
+    [75000, 100000],
+    [100000, 125000],
+    [125000, 150000],
+    [150000, 200000]
+]
+
 #Read csvs into pandas dataframes
 county_data = pd.DataFrame()
 for count in range(int(len(households_key_list)/50)+1):
@@ -372,10 +390,24 @@ county_geodata["tract_y"] = county_geodata["tract_y"].astype(int)
 county_data["tract_y"] = county_data["tract_y"].astype(int)
 data = pd.merge(county_geodata, county_data, on = "tract_y", how="inner")
 data.rename(columns=households_variables_dict, inplace = True)
-households = pd.DataFrame(columns = ["id","latitude","longitude","polygon","income"])
+households = pd.DataFrame(columns = ["id","latitude","longitude","polygon","income","household_size","vehicles","number_of_workers"])
 
 def swap_xy(x, y):
     return y, x
+
+store_polygons = []
+stores = pd.read_csv("data/stores.csv")
+for index,row in stores.iterrows():
+    lat = row["latitude"]
+    lon = row["longitude"]
+    point = Point(lat,lon)
+    project = pyproj.Transformer.from_proj(
+        pyproj.Proj('epsg:4326'), # source coordinate system
+        pyproj.Proj('epsg:3857')) # destination coordinate system
+    point = transform(project.transform, point)  # apply projection
+    polygon = Polygon(((point.x, point.y+50),(point.x+50, point.y-50),(point.x-50, point.y-50)))
+    store_polygons.append(polygon)  # apply projection
+
 
 #Iterate through each tract
 total_count = 0
@@ -386,26 +418,53 @@ for index,row in data.iterrows():
         project = pyproj.Transformer.from_proj(
             pyproj.Proj('epsg:4326'), # source coordinate system
             pyproj.Proj('epsg:3857')) # destination coordinate system
-        tract_polygon = transform(project.transform, tract_polygon)  # apply 
-        total_households = row["total households in tract"]
-        if total_households == 0:
-            continue
+        tract_polygon = transform(project.transform, tract_polygon)  # apply
+
         weights = np.array(row["under 10k":"200k+"]).astype(int)
+        if sum(weights)==0:
+            continue
+
+        total_households = int(row["total households in tract"])
+        distributed_incomes = []
+        for i in range(16):
+            uniform_list = []
+            if i != 15:
+                uniform_list = np.random.uniform(income_ranges[i][0],income_ranges[i][1],weights[i])
+            else:
+                uniform_list = np.random.uniform(200000,200000,weights[i])
+            distributed_incomes.extend(uniform_list.astype(int))
         
-        polygons = []
-        for household_num in range(int(tract_polygon.area/1000)):
+        polygons = store_polygons
+        for household_num in range(int(tract_polygon.area/7000)):
+
+
             location = Point()
             polygon = Polygon()
             if (len(polygons) != 0):
                 polygon = get_random_point(tract_polygon,polygons)
             else:
                 location = tract_polygon.centroid
-                polygon = Polygon(((location.x+10, location.y+10),(location.x-10, location.y+10),(location.x-10, location.y-10),(location.x+10, location.y-10)))
+                polygon = Polygon(((location.x+20, location.y+20),(location.x-20, location.y+20),(location.x-20, location.y-20),(location.x+20, location.y-20)))
             location = polygon.centroid
-            income = random.choices(household_values_list[1:17], weights, k=1)[0]
-            households.loc[total_count] = {"id":total_count,"latitude":location.y,"longitude":location.x,"polygon":polygon,"income":income}
+
+
+            income = distributed_incomes[random.randint(0,total_households-1)]
+            household_size = random.randint(1,4)
+            num_workers = random.randint(1,household_size)
+            vehicles = random.randint(num_workers-1,3)
+
+            households.loc[total_count] = {
+                "id":total_count,
+                "latitude":location.y,
+                "longitude":location.x,
+                "polygon":polygon,
+                "income":income,
+                "vehicles":vehicles,
+                "household_size":household_size,
+                "number_of_workers":num_workers
+                }
             total_count+=1
             polygons.append(polygon)
 
-households.to_csv('households.csv', index=False)
+households.to_csv('data/households.csv', index=False)
 print(households)

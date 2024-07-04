@@ -15,7 +15,7 @@ class Household(GeoAgent):
     defines the behavior of a single household on each step through the model.
     """
 
-    def __init__(self, model, id: int, latitude, longitude, polygon, income, search_radius: int, crs: str):
+    def __init__(self, model, id: int, latitude, longitude, polygon, income, household_size,vehicles,number_of_workers, search_radius: int, crs: str):
         """
         Initialize the Household Agent.
 
@@ -34,6 +34,11 @@ class Household(GeoAgent):
         super().__init__(id,model,polygon,crs)
         self.income = income
         self.search_radius = search_radius
+        self.latitude = latitude
+        self.longitude = longitude
+        self.household_size = household_size
+        self.vehicles = vehicles
+        self.number_of_workers = number_of_workers
 
     def choose_store(self, search_radius):
         """
@@ -94,7 +99,7 @@ class Household(GeoAgent):
     
     def step(self) -> None:
         """
-        Defines the behavior of a single household on each step through the model.
+        Defines the behavior of a single household on each step through the model. NEED TO CREATE LIST OF STORES AND ONLY SEARCH THROUGH STORES
 
         (1) Finds closest SPM and Closest CSPM
         (2) Calculates mfai based on chosen store's fsa score
