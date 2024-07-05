@@ -325,7 +325,6 @@ household_values_list = list = [
 ]
 
 income_ranges = [
-    [0, 10000],
     [10000, 15000],
     [15000, 20000],
     [20000, 25000],
@@ -420,20 +419,104 @@ for index,row in data.iterrows():
             pyproj.Proj('epsg:3857')) # destination coordinate system
         tract_polygon = transform(project.transform, tract_polygon)  # apply
 
-        weights = np.array(row["under 10k":"200k+"]).astype(int)
+        weights = np.array(row["10k to 15k":"200k+"]).astype(int)
         if sum(weights)==0:
             continue
 
         total_households = int(row["total households in tract"])
         distributed_incomes = []
-        for i in range(16):
+        for i in range(15):
             uniform_list = []
-            if i != 15:
+            if i != 14:
                 uniform_list = np.random.uniform(income_ranges[i][0],income_ranges[i][1],weights[i])
             else:
                 uniform_list = np.random.uniform(200000,200000,weights[i])
             distributed_incomes.extend(uniform_list.astype(int))
-        
+
+        vehicle_weights = [
+                            int(row["1 Person(s) 0 Vehicle(s)"]),
+                            int(row["1 Person(s) 1 Vehicle(s)"]),
+                            int(row["1 Person(s) 2 Vehicle(s)"]),
+                            int(row["1 Person(s) 3 Vehicle(s)"]),
+                            int(row["1 Person(s) 4+ Vehicle(s)"]),
+                            int(row["2 Person(s) 0 Vehicle(s)"]),
+                            int(row["2 Person(s) 1 Vehicle(s)"]),
+                            int(row["2 Person(s) 2 Vehicle(s)"]),
+                            int(row["2 Person(s) 3 Vehicle(s)"]),
+                            int(row["2 Person(s) 4+ Vehicle(s)"]),
+                            int(row["3 Person(s) 0 Vehicle(s)"]),
+                            int(row["3 Person(s) 1 Vehicle(s)"]),
+                            int(row["3 Person(s) 2 Vehicle(s)"]),
+                            int(row["3 Person(s) 3 Vehicle(s)"]),
+                            int(row["3 Person(s) 4+ Vehicle(s)"]),
+                            int(row["4+ Person(s) 0 Vehicle(s)"]),
+                            int(row["4+ Person(s) 1 Vehicle(s)"]),
+                            int(row["4+ Person(s) 2 Vehicle(s)"]),
+                            int(row["4+ Person(s) 3 Vehicle(s)"]),
+                            int(row["4+ Person(s) 4+ Vehicle(s)"]),
+                            int(row["0 Worker(s) 0 Vehicle(s)"]),
+                            int(row["0 Worker(s) 1 Vehicle(s)"]),
+                            int(row["0 Worker(s) 2 Vehicle(s)"]),
+                            int(row["0 Worker(s) 3 Vehicle(s)"]),
+                            int(row["0 Worker(s) 4+ Vehicle(s)"]),
+                            int(row["1 Worker(s) 0 Vehicle(s)"]),
+                            int(row["1 Worker(s) 1 Vehicle(s)"]),
+                            int(row["1 Worker(s) 2 Vehicle(s)"]),
+                            int(row["1 Worker(s) 3 Vehicle(s)"]),
+                            int(row["1 Worker(s) 4+ Vehicle(s)"]),
+                            int(row["2 Worker(s) 0 Vehicle(s)"]),
+                            int(row["2 Worker(s) 1 Vehicle(s)"]),
+                            int(row["2 Worker(s) 2 Vehicle(s)"]),
+                            int(row["2 Worker(s) 3 Vehicle(s)"]),
+                            int(row["2 Worker(s) 4+ Vehicle(s)"]),
+                            int(row["3+ Worker(s) 0 Vehicle(s)"]),
+                            int(row["3+ Worker(s) 1 Vehicle(s)"]),
+                            int(row["3+ Worker(s) 2 Vehicle(s)"]),
+                            int(row["3+ Worker(s) 3 Vehicle(s)"]),
+                            int(row["3+ Worker(s) 4+ Vehicle(s)"])
+                        ]
+        vehicle_weights = [0 if item == -666666666 else item for item in vehicle_weights]
+        size_index_dict = {
+            1:[0,5],
+            2:[5,10],
+            3:[10,15],
+            4:[15,20]
+        }
+        workers_index_dict = {
+            0:[20,25],
+            1:[25,30],
+            2:[30,35],
+            3:[35,-1]
+        }
+
+        worker_weights = [
+                            int(row["1 Person(s) 0 Worker(s)"]),
+                            int(row["1 Person(s) 1 Worker(s)"]),
+                            int(row["2 Person(s) 0 Worker(s)"]),
+                            int(row["2 Person(s) 1 Worker(s)"]),
+                            int(row["2 Person(s) 2 Worker(s)"]),
+                            int(row["3 Person(s) 0 Worker(s)"]),
+                            int(row["3 Person(s) 1 Worker(s)"]),
+                            int(row["3 Person(s) 2 Worker(s)"]),
+                            int(row["3 Person(s) 3 Worker(s)"]),
+                            int(row["4+ Person(s) 0 Worker(s)"]),
+                            int(row["4+ Person(s) 1 Worker(s)"]),
+                            int(row["4+ Person(s) 2 Worker(s)"]),
+                            int(row["4+ Person(s) 3+ Worker(s)"]),
+                        ]
+        worker_weights = [0 if item == -666666666 else item for item in worker_weights]
+
+        household_size_weights = [
+                            int(row["Median Income for 1 Person(s)"]),
+                            int(row["Median Income for 2 Person(s)"]),
+                            int(row["Median Income for 3 Person(s)"]),
+                            int(row["Median Income for 4 Person(s)"]),
+                            int(row["Median Income for 5 Person(s)"]),
+                            int(row["Median Income for 6 Person(s)"]),
+                            int(row["Median Income for 7+ Person(s)"])
+                        ]
+        household_size_weights = [0 if item == -666666666 else item for item in household_size_weights]
+
         polygons = store_polygons
         for household_num in range(int(tract_polygon.area/7000)):
 
@@ -447,11 +530,35 @@ for index,row in data.iterrows():
                 polygon = Polygon(((location.x+20, location.y+20),(location.x-20, location.y+20),(location.x-20, location.y-20),(location.x+20, location.y-20)))
             location = polygon.centroid
 
+            income = distributed_incomes[random.randint(0,len(distributed_incomes)-1)]
 
-            income = distributed_incomes[random.randint(0,total_households-1)]
-            household_size = random.randint(1,4)
-            num_workers = random.randint(1,household_size)
-            vehicles = random.randint(num_workers-1,3)
+            #This is stupid - literally just hardcoded
+            household_size = random.choices([1,2,3,4,5,6,7],weights=[1,1,1,1,0,0,0])[0]
+
+            num_workers = 0
+            if household_size == 1:
+                num_workers = random.choices([0,1], weights=worker_weights[:2], k=1)[0]
+            if household_size == 2:
+                num_workers = random.choices([0,1,2], weights=worker_weights[2:5], k=1)[0]
+            if household_size == 3:
+                num_workers = random.choices([0,1,2,3], weights=worker_weights[5:9], k=1)[0]
+            if household_size >= 4:
+                num_workers = random.choices([0,1,2,3], weights=worker_weights[9:], k=1)[0]
+            
+            size_indexes = None
+            if household_size<4:
+                size_indexes = size_index_dict[household_size]
+            else:
+                size_indexes = size_index_dict[4]
+            workers_indexes = workers_index_dict[num_workers]
+            print(size_indexes)
+            print(workers_indexes)
+            vehicle_combined_weights = None
+            if num_workers != 3:
+                vehicle_combined_weights = np.array(vehicle_weights[(size_indexes[0]):(size_indexes[1])])+np.array(vehicle_weights[(workers_indexes[0]):(workers_indexes[1])])
+            else:
+                vehicle_combined_weights = np.array(vehicle_weights[(size_indexes[0]):(size_indexes[1])])+np.array(vehicle_weights[(workers_indexes[0]):])
+            vehicles = random.choices([0,1,2,3,4],weights=vehicle_combined_weights)[0]
 
             households.loc[total_count] = {
                 "id":total_count,
