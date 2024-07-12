@@ -19,23 +19,25 @@ from config import APIKEY
 county_code = FIBSCODE[2:]
 state_code = FIBSCODE[:2]
 
-# Function to generate a random point within a polygon
+# Function to generate a random point within a tract to place a household agent
 def get_random_point(tract_polygon,polygons):
     min_x, min_y, max_x, max_y = tract_polygon.bounds
     count = 0
+    # randomly select a point until a valid location is found
     while True:
         print(count)
         # Generate a random point
         location = Point(random.uniform(min_x, max_x), random.uniform(min_y, max_y))
         
-        # Check if the point is inside the polygon
-        
+        # Check if the point is inside the tract
         if tract_polygon.contains(location):
             count += 1
+            # If too many iterations (no space to put new house), raise exception
             if count == 1000:
                 raise Exception()
             polygon =Polygon(((location.x+20, location.y+20),(location.x-20, location.y+20),(location.x-20, location.y-20),(location.x+20, location.y-20)))
             not_touching = True
+            # Check if household is touching another houehold
             for polygon_2 in polygons:
                 touches = polygon.intersects(polygon_2)
                 if touches:
@@ -44,7 +46,7 @@ def get_random_point(tract_polygon,polygons):
             if not_touching:
                 return polygon
 
-#Dictionary to describe homedata Variables
+#Dictionary to describe census Variables
 households_variables_dict = {
     "B19001_001E": "total households in tract",
     "B19001_002E": "under 10k",
@@ -138,6 +140,7 @@ households_variables_dict = {
     "B19019_008E": "Median Income for 7+ Person(s)"
 }
 
+#list all used census variables
 households_key_list = [
     "B19001_001E",
     "B19001_002E",
@@ -231,99 +234,7 @@ households_key_list = [
     "B19019_008E"
 ]
 
-household_values_list = list = [
-    "total households in tract",
-    "under 10k",
-    "10k to 15k",
-    "15k to 20k",
-    "20k to 25k",
-    "25k to 30k",
-    "30k to 35k",
-    "35k to 40k",
-    "40k to 45k",
-    "45k to 50k",
-    "50k to 60k",
-    "60k to 75k",
-    "75k to 100k",
-    "100k to 125k",
-    "125k to 150k",
-    "150k to 200k",
-    "200k+",
-    "0 Vehicle(s)",
-    "1 Vehicle(s)",
-    "2 Vehicle(s)",
-    "3 Vehicle(s)",
-    "4+ Vehicle(s)",
-    "1 Person(s)",
-    "1 Person(s) 0 Vehicle(s)",
-    "1 Person(s) 1 Vehicle(s)",
-    "1 Person(s) 2 Vehicle(s)",
-    "1 Person(s) 3 Vehicle(s)",
-    "1 Person(s) 4+ Vehicle(s)",
-    "2 Person(s)",
-    "2 Person(s) 0 Vehicle(s)",
-    "2 Person(s) 1 Vehicle(s)",
-    "2 Person(s) 2 Vehicle(s)",
-    "2 Person(s) 3 Vehicle(s)",
-    "2 Person(s) 4+ Vehicle(s)",
-    "3 Person(s)",
-    "3 Person(s) 0 Vehicle(s)",
-    "3 Person(s) 1 Vehicle(s)",
-    "3 Person(s) 2 Vehicle(s)",
-    "3 Person(s) 3 Vehicle(s)",
-    "3 Person(s) 4+ Vehicle(s)",
-    "4+ Person(s)",
-    "4+ Person(s) 0 Vehicle(s)",
-    "4+ Person(s) 1 Vehicle(s)",
-    "4+ Person(s) 2 Vehicle(s)",
-    "4+ Person(s) 3 Vehicle(s)",
-    "4+ Person(s) 4+ Vehicle(s)",
-    "0 Worker(s)",
-    "1 Worker(s)",
-    "2 Worker(s)",
-    "3+ Worker(s)",
-    "1 Person(s) 0 Worker(s)",
-    "1 Person(s) 1 Worker(s)",
-    "2 Person(s) 0 Worker(s)",
-    "2 Person(s) 1 Worker(s)",
-    "2 Person(s) 2 Worker(s)",
-    "3 Person(s) 0 Worker(s)",
-    "3 Person(s) 1 Worker(s)",
-    "3 Person(s) 2 Worker(s)",
-    "3 Person(s) 3 Worker(s)",
-    "4+ Person(s) 0 Worker(s)",
-    "4+ Person(s) 1 Worker(s)",
-    "4+ Person(s) 2 Worker(s)",
-    "4+ Person(s) 3+ Worker(s)",
-    "0 Worker(s) 0 Vehicle(s)",
-    "0 Worker(s) 1 Vehicle(s)",
-    "0 Worker(s) 2 Vehicle(s)",
-    "0 Worker(s) 3 Vehicle(s)",
-    "0 Worker(s) 4+ Vehicle(s)",
-    "1 Worker(s) 0 Vehicle(s)",
-    "1 Worker(s) 1 Vehicle(s)",
-    "1 Worker(s) 2 Vehicle(s)",
-    "1 Worker(s) 3 Vehicle(s)",
-    "1 Worker(s) 4+ Vehicle(s)",
-    "2 Worker(s) 0 Vehicle(s)",
-    "2 Worker(s) 1 Vehicle(s)",
-    "2 Worker(s) 2 Vehicle(s)",
-    "2 Worker(s) 3 Vehicle(s)",
-    "2 Worker(s) 4+ Vehicle(s)",
-    "3+ Worker(s) 0 Vehicle(s)",
-    "3+ Worker(s) 1 Vehicle(s)",
-    "3+ Worker(s) 2 Vehicle(s)",
-    "3+ Worker(s) 3 Vehicle(s)",
-    "3+ Worker(s) 4+ Vehicle(s)",
-    "Median Income for 1 Person(s)",
-    "Median Income for 2 Person(s)",
-    "Median Income for 3 Person(s)",
-    "Median Income for 4 Person(s)",
-    "Median Income for 5 Person(s)",
-    "Median Income for 6 Person(s)",
-    "Median Income for 7+ Person(s)"
-]
-
+#ranges of income buckets in census data
 income_ranges = [
     [10000, 15000],
     [15000, 20000],
@@ -341,10 +252,13 @@ income_ranges = [
     [150000, 200000]
 ]
 
-#Read csvs into pandas dataframes
+#dataframe to store ACS data
 county_data = pd.DataFrame()
+
+#Load ACS data from census API. Loads 50 variables at one time
 for count in range(int(len(households_key_list)/50)+1):
     variables = ""
+    # Choose variables to load from households_key_list
     if ((count+1)*50) > len(households_key_list):
         variables = ",".join(households_key_list[(50*count):])
     elif count == 0:
@@ -354,8 +268,10 @@ for count in range(int(len(households_key_list)/50)+1):
             variables = ",".join(households_key_list[:(50*(count+1)-1)])
     else:
         variables = ",".join(households_key_list[(50*count):(50*(count+1)-1)])
+    #Generate url for census API
     url = f"https://api.census.gov/data/{YEAR}/acs/acs5?get=NAME,{variables}&for=tract:*&in=state:{state_code}&in=county:{county_code}&key={APIKEY}"
     response = requests.request("GET", url)
+    #insert census response into dataframe
     if len(county_data != 0):
         county_data = pd.merge(pd.DataFrame(response.json()[1:], columns=response.json()[0]), county_data, on='NAME', how='inner')
     else:
@@ -363,7 +279,7 @@ for count in range(int(len(households_key_list)/50)+1):
 
 
 
-# Load in tract data
+# Load in geogeaphical tract data from census. Makes a call to census API and then loads it into a GeoDataFrame
 tract_url = f"https://www2.census.gov/geo/tiger/TIGER{YEAR}/TRACT/tl_{YEAR}_{state_code}_tract.zip"
 response = requests.request("GET", tract_url)
 # Use BytesIO to handle the zip file in memory
@@ -371,7 +287,6 @@ with ZipFile(BytesIO(response.content)) as zip_ref:
     # Create a temporary directory to extract the zip file
     with tempfile.TemporaryDirectory() as tmpdirname:
         zip_ref.extractall(tmpdirname)
-        
         # Find the shapefile or GeoJSON file in the extracted contents
         for root, dirs, files in os.walk(tmpdirname):
             for file in files:
@@ -412,6 +327,8 @@ for index,row in stores.iterrows():
 total_count = 0
 for index,row in data.iterrows():
     if ((row['tract_y']>5000)&(row['tract_y']<6000)):
+
+        # Get polygont hat represents tract and transform to mercator projection coordinates
         tract_polygon = Polygon(row["geometry"])
         tract_polygon = transform(swap_xy, tract_polygon)
         project = pyproj.Transformer.from_proj(
@@ -419,19 +336,14 @@ for index,row in data.iterrows():
             pyproj.Proj('epsg:3857')) # destination coordinate system
         tract_polygon = transform(project.transform, tract_polygon)  # apply
 
-        weights = np.array(row["10k to 15k":"200k+"]).astype(int)
+        # Get amount of people in each income bucket
+        weights = np.array(row["10k to 15k":"150k to 200k"]).astype(int)
         if sum(weights)==0:
             continue
-
+        
+        # Get total households in tract
         total_households = int(row["total households in tract"])
         distributed_incomes = []
-        for i in range(15):
-            uniform_list = []
-            if i != 14:
-                uniform_list = np.random.uniform(income_ranges[i][0],income_ranges[i][1],weights[i])
-            else:
-                uniform_list = np.random.uniform(200000,200000,weights[i])
-            distributed_incomes.extend(uniform_list.astype(int))
 
         vehicle_weights = [
                             int(row["1 Person(s) 0 Vehicle(s)"]),
@@ -476,6 +388,7 @@ for index,row in data.iterrows():
                             int(row["3+ Worker(s) 4+ Vehicle(s)"])
                         ]
         vehicle_weights = [0 if item == -666666666 else item for item in vehicle_weights]
+
         size_index_dict = {
             1:[0,5],
             2:[5,10],
@@ -518,11 +431,13 @@ for index,row in data.iterrows():
         household_size_weights = [0 if item == -666666666 else item for item in household_size_weights]
 
         polygons = store_polygons
+
+        # Create one household on each loop iteration
         for household_num in range(int(tract_polygon.area/7000)):
-
-
             location = Point()
             polygon = Polygon()
+
+            #
             if (len(polygons) != 0):
                 polygon = get_random_point(tract_polygon,polygons)
             else:
@@ -530,11 +445,14 @@ for index,row in data.iterrows():
                 polygon = Polygon(((location.x+20, location.y+20),(location.x-20, location.y+20),(location.x-20, location.y-20),(location.x+20, location.y-20)))
             location = polygon.centroid
 
-            income = distributed_incomes[random.randint(0,len(distributed_incomes)-1)]
+            # Generate income based on proportions from census data
+            income_range_index = random.choices(list(range(14)),weights)[0]
+            income = random.randint(income_ranges[income_range_index][0]/1000,income_ranges[income_range_index][1]/1000)*1000
 
             #This is stupid - literally just hardcoded
             household_size = random.choices([1,2,3,4,5,6,7],weights=[1,1,1,1,0,0,0])[0]
 
+            #Get number of workers based on household_size
             num_workers = 0
             if household_size == 1:
                 num_workers = random.choices([0,1], weights=worker_weights[:2], k=1)[0]
@@ -544,22 +462,22 @@ for index,row in data.iterrows():
                 num_workers = random.choices([0,1,2,3], weights=worker_weights[5:9], k=1)[0]
             if household_size >= 4:
                 num_workers = random.choices([0,1,2,3], weights=worker_weights[9:], k=1)[0]
-            
+
+            # Get vehicle amount based on census data of household size and number of workers
             size_indexes = None
             if household_size<4:
                 size_indexes = size_index_dict[household_size]
             else:
                 size_indexes = size_index_dict[4]
             workers_indexes = workers_index_dict[num_workers]
-            print(size_indexes)
-            print(workers_indexes)
             vehicle_combined_weights = None
             if num_workers != 3:
                 vehicle_combined_weights = np.array(vehicle_weights[(size_indexes[0]):(size_indexes[1])])+np.array(vehicle_weights[(workers_indexes[0]):(workers_indexes[1])])
             else:
                 vehicle_combined_weights = np.array(vehicle_weights[(size_indexes[0]):(size_indexes[1])])+np.array(vehicle_weights[(workers_indexes[0]):])
             vehicles = random.choices([0,1,2,3,4],weights=vehicle_combined_weights)[0]
-
+            
+            # Add household with attributes to the housholds csv
             households.loc[total_count] = {
                 "id":total_count,
                 "latitude":location.y,
@@ -570,6 +488,8 @@ for index,row in data.iterrows():
                 "household_size":household_size,
                 "number_of_workers":num_workers
                 }
+            
+            
             total_count+=1
             polygons.append(polygon)
 
