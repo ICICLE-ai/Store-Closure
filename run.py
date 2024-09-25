@@ -8,4 +8,4 @@ import profile
 abm_steps = ABM()
 for i in range(1):
     abm_steps.step()
-#profile.run(server.launch())
+profile.run(server.launch())
