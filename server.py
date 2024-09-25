@@ -38,3 +38,4 @@ server = ModularServer(
     ABM, [map_element], "ABM", model_params
 )
 
+server.launch(8080)
