@@ -14,12 +14,17 @@ from shapely.geometry import Polygon
 from data import erhc_values,erlc_values,lrhc_values,lrlc_values,spm_values,cspm_values,erhc_data,erlc_data,lrhc_data,lrlc_data,spm_data,cspm_data
 from agent import erhc,erlc,lrhc,lrlc,spm,cspm
 from shapely.geometry import Polygon
-
+import time
+import logging
 global h
 h=0
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+#log messages to terminal in above format
 class ABM(Model):
     Map_coordinates = [39.9612, -82.9988]
     def __init__(self):
+        logging.info("starting") #use logging as opposed to print statements to ensure display in terminal
+        start_time = time.time()
         global h
         self.schedule = BaseScheduler(self)
         self.grid = GeoSpace()
@@ -71,15 +76,21 @@ class ABM(Model):
                                             "ERLC_FA": lambda m: m.get_total_fa(erlc),
                                             "LRHC_FA": lambda m: m.get_total_fa(lrhc),
                                             "LRLC_FA": lambda m: m.get_total_fa(lrlc)})
-
+        end_time = time.time()
+        init_time = end_time - start_time
+        logging.info(f"Init time: {init_time:.6f} seconds")
         #q = self.datacollector.get_model_vars_dataframe()
         #q.to_csv("data.csv")
 
     def step(self):
+        start_time = time.time()
         self.schedule.step()
         self.datacollector.collect(self)
         q = self.datacollector.get_model_vars_dataframe()
         q.to_csv("data.csv")
+        end_time = time.time()
+        step_time = end_time - start_time
+        logging.info(f"Step time: {step_time:.6f} seconds")
         
 
 

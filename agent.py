@@ -5,6 +5,7 @@ import numpy as np
 import random
 import networkx as nx
 import osmnx as ox
+import time
 
 ox.settings.use_cache=True
 ox.settings.cache_folder = "C:/Users/user/Desktop/RA/pythonProject20/cache"
@@ -80,20 +81,21 @@ class erhc(GeoAgent):
             self.fsa_sum += chosen_market.FSA
             self.fa = (self.fsa_sum/ 700) * 100
             chosen_market.fa = round(chosen_market.fa,2)
-            print("Agent - ", type(self),"-",self.unique_id," ", "-", round(self.fa,2)," ")
-            print("Market - ", type(chosen_market),chosen_market.unique_id," ", "-", chosen_market.FSA)
-            #distance_chosen = df_distance['distance'].loc[(df_distance['household']==self.unique_id) & (df_distance['market']==chosen_market.unique_id)].iloc[0]
+            # print("Agent - ", type(self),"-",self.unique_id," ", "-", round(self.fa,2)," ")
+            # print("Market - ", type(chosen_market),chosen_market.unique_id," ", "-", chosen_market.FSA)
+            # #distance_chosen = df_distance['distance'].loc[(df_distance['household']==self.unique_id) & (df_distance['market']==chosen_market.unique_id)].iloc[0]
             
-            print("Distance by car between them is ",round(dis,4)," miles\n")
+            # print("Distance by car between them is ",round(dis,4)," miles\n")
             household_data.append(["erhc",self.unique_id,self.fa,chosen_market.unique_id])
 
         else:
             if (self.fa > 0):
                 self.fa -= 1.25
-                print("Agent - ", type(self),self.unique_id," ", "-", self.fa, "\n")
+                # print("Agent - ", type(self),self.unique_id," ", "-", self.fa, "\n")
                 household_data.append(["erhc", self.unique_id, self.fa, "No Market"])
             else:
-                print("Agent - ", type(self),self.unique_id," ", "-", self.fa, "\n")
+                # print("Agent - ", type(self),self.unique_id," ", "-", self.fa, "\n")
+                pass #remove if you want print statement
         df = pd.DataFrame(household_data,columns=columns_for_results)
         #print(df_distance)
         #print(self.steps)
@@ -156,20 +158,21 @@ class erlc(GeoAgent):
             self.fa = (self.fsa_sum/ 640) * 100
             
             chosen_market.fa = round(chosen_market.fa, 2)
-            print("Agent - ", type(self), "-", self.unique_id, " ", "-", round(self.fa,2), " ")
-            print("Market - ", type(chosen_market), chosen_market.unique_id, " ", "-", chosen_market.FSA)
+            # print("Agent - ", type(self), "-", self.unique_id, " ", "-", round(self.fa,2), " ")
+            # print("Market - ", type(chosen_market), chosen_market.unique_id, " ", "-", chosen_market.FSA)
             
-            print("Distance by walk between them is ", round(dis,4), " miles\n")
+            # print("Distance by walk between them is ", round(dis,4), " miles\n")
             household_data.append(["erlc", self.unique_id, self.fa, chosen_market.unique_id])
     
 
         else:
             if (self.fa > 0):
                 self.fa -= 1
-                print("Agent - ", type(self), self.unique_id, " ", "-", self.fa, "\n")
+                # print("Agent - ", type(self), self.unique_id, " ", "-", self.fa, "\n")
                 household_data.append(["erlc", self.unique_id, self.fa, "No Market"])
             else:
-                print("Agent - ", type(self), self.unique_id, " ", "-", self.fa, "\n")
+                # print("Agent - ", type(self), self.unique_id, " ", "-", self.fa, "\n")
+                pass
         df = pd.DataFrame(household_data, columns=columns_for_results)
         df_distance.to_csv("distance_data.csv",index=False)
         df.to_csv("household_data.csv")
@@ -228,20 +231,21 @@ class lrhc(GeoAgent):
             self.fa = (self.fsa_sum/600) * 100
 
             chosen_market.fa = round(chosen_market.fa, 2)
-            print("Agent - ", type(self), "-", self.unique_id, " ", "-", round(self.fa,2), " ")
-            print("Market - ", type(chosen_market), chosen_market.unique_id, " ", "-", chosen_market.FSA)
+            # print("Agent - ", type(self), "-", self.unique_id, " ", "-", round(self.fa,2), " ")
+            # print("Market - ", type(chosen_market), chosen_market.unique_id, " ", "-", chosen_market.FSA)
             
-            print("Distance by car between them is ", round(dis,4), " miles\n")
+            # print("Distance by car between them is ", round(dis,4), " miles\n")
             household_data.append(["lrhc", self.unique_id, self.fa, chosen_market.unique_id])
 
 
         else:
             if (self.fa > 0):
                 self.fa -= 1
-                print("Agent - ", type(self), self.unique_id, " ", "-", self.fa, "\n")
+                # print("Agent - ", type(self), self.unique_id, " ", "-", self.fa, "\n")
                 household_data.append(["lrhc", self.unique_id, self.fa, "No Market"])
             else:
-                print("Agent - ", type(self), self.unique_id, " ", "-", self.fa, "\n")
+                # print("Agent - ", type(self), self.unique_id, " ", "-", self.fa, "\n")
+                pass
         df = pd.DataFrame(household_data, columns=columns_for_results)
         # print(self.steps)
         df_distance.to_csv("distance_data.csv", index=False)
@@ -258,6 +262,7 @@ class lrlc(GeoAgent):
         self.fsa_sum=fsa_sum
 
     def step(self):
+        start_time = time.time()
         neighbors = self.model.grid.get_neighbors_within_distance(self,6889,center=False, relation="intersects")#neighbors within 5 miles
         list_of_spm = []
         list_of_cspm=[]
@@ -282,6 +287,10 @@ class lrlc(GeoAgent):
                         list_of_spm.append([neighbor,distance])
                     else:
                         list_of_cspm.append([neighbor,distance])
+                end_time = time.time()
+                step_time = end_time - start_time
+                # print(f"Step execution time: {step_time:.6f} seconds")
+
 
 
         if len(list_of_cspm) >= 1 or len(list_of_spm) >= 1:
@@ -299,20 +308,21 @@ class lrlc(GeoAgent):
             self.fsa_sum+=chosen_market.FSA
             self.fa = (self.fsa_sum/480) * 100
             chosen_market.fa = round(chosen_market.fa, 2)
-            print("Agent - ", type(self), "-", self.unique_id, " ", "-",round(self.fa,2), " ")
-            print("Market - ", type(chosen_market), chosen_market.unique_id, " ", "-", chosen_market.FSA)
+            # print("Agent - ", type(self), "-", self.unique_id, " ", "-",round(self.fa,2), " ")
+            # print("Market - ", type(chosen_market), chosen_market.unique_id, " ", "-", chosen_market.FSA)
             
-            print("Distance by walk between them is ", round(dis,4), " miles\n")
+            # print("Distance by walk between them is ", round(dis,4), " miles\n")
             household_data.append(["lrlc", self.unique_id, self.fa, chosen_market.unique_id])
             # print(st)
 
         else:
             if (self.fa > 0):
                 self.fa -= 1
-                print("Agent - ", type(self), self.unique_id, " ", "-", self.fa, "\n")
+                # print("Agent - ", type(self), self.unique_id, " ", "-", self.fa, "\n")
                 household_data.append(["lrlc", self.unique_id, self.fa, "No Market"])
             else:
-                print("Agent - ", type(self), self.unique_id, " ", "-", self.fa, "\n")
+                # print("Agent - ", type(self), self.unique_id, " ", "-", self.fa, "\n")
+                pass
         df = pd.DataFrame(household_data, columns=columns_for_results)
         # print(self.steps)
         df_distance.to_csv("distance_data.csv", index=False)
