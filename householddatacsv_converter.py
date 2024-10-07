@@ -1,6 +1,7 @@
 #This file converts household testing data to the old file format 
 import pandas as pd
 from shapely import wkt
+from pyproj import Transformer
 
 # Step 1: Read the input CSV
 input_csv = pd.read_csv('./Benchmarking_datasets/testing_data_columbus.csv')
@@ -38,6 +39,7 @@ def convert_vehicles_to_owncar(vehicles):
 
 # Step 2: Apply transformations to each row
 output_data = []
+transformer = Transformer.from_crs(3857, 4326)
 for index, row in input_csv.iterrows():
     location_wkt = row['location']  # Assuming the location is in WKT format
     income = row['income']
@@ -45,7 +47,7 @@ for index, row in input_csv.iterrows():
     
     # Extract longitude and latitude from the location (WKT polygon)
     longitude, latitude = extract_centroid(location_wkt)
-    
+    longitude, latitude = transformer.transform(longitude, latitude)
     # Convert income to hhinc8
     hhinc8 = convert_income_to_hhinc8(income)
     

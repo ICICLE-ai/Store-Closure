@@ -2,6 +2,7 @@
 import pandas as pd
 from shapely import wkt
 from shapely.geometry import Polygon
+from pyproj import Transformer
 
 input_csv = pd.read_csv('input_file.csv')
 #print(input_csv.columns)
@@ -20,6 +21,7 @@ def abbreviate_category(category):
         return "unknown"
 
 output_data = []
+transformer = Transformer.from_crs(3857, 4326)
 for index, row in input_csv.iterrows():
     #print(f"Row polygon data: {row['polygon']}")
     category = row['category']
@@ -27,6 +29,7 @@ for index, row in input_csv.iterrows():
     
     # Extract longitude and latitude from the centroid of the polygon
     longitude, latitude = extract_centroid(polygon)
+    longitude, latitude = transformer.transform(longitude, latitude)
     # Default score value
     FSA = 90 if category == "supermarket" else 50
     category_abbr = abbreviate_category(category)
